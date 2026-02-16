@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>George Usanetashvili - Volkov Commander VVC</title>
+
+<!-- Cache Buster: v2026.02.16.01 -->
+<link rel="canonical" href="https://caucasfactory.github.io/?v=2026.02.16.01">
+    
     <style>
         :root { --vc-blue: #0000aa; --vc-cyan: #00aaaa; --vc-white: #ffffff; --vc-yellow: #ffff00; }
         body { background: #000; color: #fff; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; user-select: none; }
@@ -128,6 +132,12 @@
         const f = fs[sel];
         const v = document.getElementById('viewer');
         const j = document.getElementById('jitsi-frame');
+
+j.setAttribute('allow', 'camera *; microphone *; display-capture *');
+j.setAttribute('allowusermedia', 'true');
+j.setAttribute('allowfullscreen', 'true');
+
+j.setAttribute('allow', 'camera *; microphone *; display-capture *; autoplay *; clipboard-write *');
 
         if(f.type === 'zip' || f.name.endsWith('.pdf')) {
             alert("Copying file to your local computer...");

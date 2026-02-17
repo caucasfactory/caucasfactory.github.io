@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>George Usanetashvili - Volkov Engine VVC v13</title>
+    <style>
+        :root { --vc-blue: #0000aa; --vc-cyan: #00aaaa; --vc-white: #ffffff; --vc-yellow: #ffff00; --vc-gray: #aaaaaa; }
+        body { background: #000; color: #fff; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; user-select: none; }
+        .top-menu { background: var(--vc-cyan); color: #000; display: flex; padding: 2px; border-bottom: 2px solid #fff; }
+        .menu-item { padding: 0 15px; font-weight: bold; cursor: pointer; position: relative; }
+        .menu-item:hover { background: #fff; }
+        .dropdown { display: none; position: absolute; top: 100%; left: 0; background: var(--vc-cyan); border: 2px solid #fff; min-width: 200px; z-index: 1000; box-shadow: 8px 8px #000; }
+        .menu-item:hover .dropdown { display: block; }
+        .dropdown-link { display: block; padding: 4px 10px; color: #000; text-decoration: none; font-size: 13px; border-bottom: 1px solid #555; }
+        .dropdown-link:hover { background: #fff; }
+        
+        .container { display: grid; grid-template-columns: 30% 70%; height: calc(100vh - 55px); }
+        .pane { background: var(--vc-blue); border: 1px solid #fff; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+        .pane-header { background: var(--vc-cyan); color: #000; text-align: center; font-weight: bold; padding: 2px; font-size: 12px; }
+        .active-header { color: var(--vc-yellow); text-decoration: underline; }
+        
+        .file-list { flex-grow: 1; overflow-y: auto; padding: 5px; outline: none; }
+        .file-item { cursor: pointer; padding: 2px 5px; white-space: nowrap; }
+        .selected-file { background: var(--vc-cyan); color: #000; font-weight: bold; }
+        .protected { color: var(--vc-yellow); }
+
+        #viewer-area { display: none; flex-direction: column; height: 100%; width: 100%; position: absolute; top: 0; left: 0; background: var(--vc-blue); z-index: 10; }
+        #view-top { background: var(--vc-cyan); color: #000; padding: 2px; font-weight: bold; text-align: center; }
+        #viewer { flex-grow: 1; background: var(--vc-blue); color: var(--vc-cyan); border: 2px inset var(--vc-cyan); font-size: 16px; outline: none; resize: none; padding: 15px; line-height: 1.4; }
+        #jitsi-frame { flex-grow: 1; display: none; border: none; background: #000; }
+
+        .dialog { position: absolute; top: 25%; left: 10%; width: 80%; background: var(--vc-gray); border: 2px solid #fff; color: #000; z-index: 2000; box-shadow: 10px 10px #000; padding: 10px; display: none; text-align: center; }
+        .dialog-title { background: var(--vc-blue); color: #fff; padding: 2px; font-weight: bold; margin-bottom: 10px; }
+        .drive-btn { display: inline-block; padding: 5px 15px; margin: 5px; border: 2px solid #000; cursor: pointer; background: var(--vc-cyan); font-weight: bold; }
+
+        .f-bar { display: grid; grid-template-columns: repeat(10, 1fr); background: #000; height: 25px; position: fixed; bottom: 0; width: 100%; }
+        .f-btn { font-size: 11px; text-align: center; border-right: 1px solid #333; cursor: pointer; line-height: 25px; }
+        .f-num { font-weight: bold; color: #fff; }
+        .f-txt { background: var(--vc-cyan); color: #000; padding: 0 4px; }
+    </style>
+</head>
+<body onkeydown="handleGlobalKeys(event)">
+
+<div class="top-menu">
+    <div class="menu-item">Left <div class="dropdown"><a href="#" class="dropdown-link" onclick="sortActive()">Sort by Name</a></div></div>
+    <div class="menu-item">Files
+        <div class="dropdown">
+            <a href="#" class="dropdown-link" onclick="executeFile()">F3 View</a>
+            <a href="#" class="dropdown-link" onclick="editMode()">F4 Edit</a>
+            <a href="#" class="dropdown-link" onclick="copyFile()">F5 Copy</a>
+            <a href="#" class="dropdown-link" onclick="createNewDir()">F7 Mkdir</a>
+            <a href="#" class="dropdown-link" onclick="deleteFile()">F8 Delete</a>
+            <a href="#" class="dropdown-link" onclick="createNewFile()">Shift-F4 New File</a>
+            <hr>
+            <a href="#" class="dropdown-link" onclick="location.reload()">F10 Quit</a>
+        </div>
+    </div>
+    <div class="menu-item">Commands</div>
+    <div class="menu-item">Options</div>
+    <div class="menu-item">Right 
+        <div class="dropdown">
+            <a href="#" class="dropdown-link" onclick="openDriveMenu()">Drive... Alt-F2</a>
+            <a href="#" class="dropdown-link" onclick="sortActive()">Sort by Name</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="pane" id="pane-0">
+        <div class="pane-header" id="head-0">WEB ./ROOT</div>
+        <div class="file-list" id="list-0" onclick="activePane=0; render();"></div>
+    </div>
+    <div class="pane" id="pane-1">
+        <div class="pane-header" id="head-1">WEB ./ROOT</div>
+        <div class="file-list" id="list-1" onclick="activePane=1; render();"></div>
+        <div id="viewer-area">
+            <div id="view-top">EDITOR / VIEW</div>
+            <textarea id="viewer" spellcheck="false"></textarea>
+            <iframe id="jitsi-frame" allow="camera *; microphone *; display-capture *; autoplay *; clipboard-write *" allowfullscreen="true"></iframe>
+        </div>
+    </div>
+</div>
+
+<div id="drive-dialog" class="dialog">
+    <div class="dialog-title">Drive Selection</div>
+    <p>Choose drive for active panel:</p>
+    <div class="drive-btn" onclick="setDrive('WEB')">Web ./root</div>
+    <div class="drive-btn" onclick="setDrive('PC')">PC C: Drive</div>
+    <div style="margin-top:10px;">A C D <b>E</b> F G Z</div>
+</div>
+
+<div class="f-bar">
+    <div class="f-btn"><span class="f-num">1</span><span class="f-txt">Help</span></div>
+    <div class="f-btn" onclick="saveFile()"><span class="f-num">2</span><span class="f-txt">Save</span></div>
+    <div class="f-btn" onclick="executeFile()"><span class="f-num">3</span><span class="f-txt">View</span></div>
+    <div class="f-btn" onclick="editMode()"><span class="f-num">4</span><span class="f-txt">Edit</span></div>
+    <div class="f-btn" onclick="copyFile()"><span class="f-num">5</span><span class="f-txt">Copy</span></div>
+    <div class="f-btn" onclick="createNewDir()"><span class="f-num">7</span><span class="f-txt">MkDir</span></div>
+    <div class="f-btn" onclick="deleteFile()"><span class="f-num">8</span><span class="f-txt">Delete</span></div>
+    <div class="f-btn" onclick="closeViewer()"><span class="f-num">9</span><span class="f-txt">Tree</span></div>
+    <div class="f-btn" onclick="location.reload()"><span class="f-num">10</span><span class="f-txt">Quit</span></div>
+</div>
+
+<script>
+    let activePane = 0;
+    let panels = [{ drive: 'WEB', path: 'ROOT', sel: 0 }, { drive: 'WEB', path: 'ROOT', sel: 0 }];
+
+    let db = JSON.parse(localStorage.getItem('george_vvc_v13')) || {
+        "ROOT": [
+            { name: 'ABOUT_US.txt', type: 'txt', protected: true, content: `          We Are Innovative Technology Factory 
+A multicultural technology factory focused on creating affordable innovations and practical gadgets for everyday life, improving education process, improving disability support equipment, founding new cheap energy, and make better or cheapest transportation. 
+we have aim to serve as a technology bridge between Europe and Asia and support young inventors in bringing ideas into production. We are open to representatives of local religious and ethnic minorities as well as to foreigners, regardless of their race or origin. We believe in tolerance and equality, and that all people are gifts from God.
+
+მულტიკულტურული ტექნოლოგიების ქარხანა, რომელიც ორიენტირებულია ყოველდღიური ცხოვრებისთვის ხელმისაწვდომი ინოვაციებისა და პრაქტიკული გაჯეტების შექმნაზე, საგანმანათლებლო პროცესის გაუმჯობესებაზე, შეზღუდული შესაძლებლობის მქონე პირთა დამხმარე აღჭურვილობის გაუმჯობესებაზე, ახალი იაფი ენერგიის დანერგვაზე და უკეთესი ან ყველაზე იაფი ტრანსპორტის შექმნაზე.
+ჩვენი მიზანია ვიმოქმედოთ როგორც ტექნოლოგიური ხიდი ევროპასა და აზიას შორის და დავეხმაროთ ახალგაზრდა გამომგონებლებს იდეების წარმოებაში გადატანაში. ჩვენ ვართ გახსნილი ადგილობრივი რელიგიური და ეთნიკური უმცირესობების წამომადგენლებისთვის და ასევე ჩამოსული უცხოელებისთვის, მიუხედავად მათი რასისა თუ წარმომავლობისა ჩვენ გვჯერა ტოლერანტულობის და თანასწორობის რომ ყველა ადამიანი ღმერთის საჩუქარია
+
+Многокультурная технологическая фабрика, ориентированная на создание доступных инноваций и практичных гаджетов для повседневной жизни, совершенствование образовательного процесса, улучшение оборудования для людей с ограниченными возможностями, разработку новых дешевых источников энергии и создание более эффективных и экономичных транспортных средств.
+Наша цель — служить технологическим мостом между Европе и Азией и поддерживать молодых изобретателей в воплощении их идей в производство. Мы открыты для представителей местных религиозных и этнических меньшинств, а также для иностранцев, независимо от их расы или происхождения. Мы верим в терпимость и равенство, и в то, что все люди — дар Божий.` },
+            { name: 'CONTACT.txt', content: 'E-mail: caucasfactory@yahoo.com  tel: +995 598-08-00-78. Address: Georgia caucas region', type: 'txt', protected: true },
+            { name: 'LIVE_CLASS.exe', content: 'https://meet.jit.si/GeorgeUsanetashviliClass', type: 'exe' },
+            { name: 'DOWNLOADS', type: 'dir' }
+        ],
+        "DOWNLOADS": [
+            { name: '..', type: 'up' },
+            { name: 'ROBOT_PLAN.pdf', content: 'robot_plan.pdf', type: 'pdf' },
+            { name: 'ROBOT_CODE.zip', content: 'robot_code.zip', type: 'zip' }
+        ],
+        "PC": []
+    };
+
+    function render() {
+        [0, 1].forEach(idx => {
+            const p = panels[idx];
+            const list = document.getElementById('list-' + idx);
+            const head = document.getElementById('head-' + idx);
+            const curFiles = (p.drive === 'PC') ? db["PC"] : db[p.path];
+            head.innerText = (p.drive === 'PC' ? "C:" : "WEB") + " ./" + p.path;
+            head.className = "pane-header " + (activePane === idx ? "active-header" : "");
+            list.innerHTML = '';
+            curFiles.forEach((f, i) => {
+                const div = document.createElement('div');
+                div.className = 'file-item ' + (p.sel === i && activePane === idx ? 'selected-file ' : '') + (f.protected ? 'protected' : '');
+                div.innerText = f.type === 'dir' ? `[${f.name}]` : f.name;
+                div.onclick = () => { activePane = idx; p.sel = i; render(); };
+                div.ondblclick = () => { activePane = idx; p.sel = i; executeFile(); };
+                list.appendChild(div);
+            });
+        });
+    }
+
+    function handleGlobalKeys(e) {
+        if (document.activeElement.id === 'viewer') return;
+        let p = panels[activePane];
+        let files = (p.drive === 'PC') ? db["PC"] : db[p.path];
+        if (e.key === "Tab") { activePane = 1 - activePane; render(); e.preventDefault(); }
+        if (e.key === "ArrowDown") { p.sel = (p.sel + 1) % files.length; render(); e.preventDefault(); }
+        if (e.key === "ArrowUp") { p.sel = (p.sel - 1 + files.length) % files.length; render(); e.preventDefault(); }
+        if (e.key === "Enter" || e.key === "F3") { executeFile(); }
+        if (e.key === "F4") { editMode(); }
+        if (e.key === "F5") { copyFile(); }
+        if (e.key === "F7") { createNewDir(); }
+        if (e.key === "F8") { deleteFile(); }
+        if (e.key === "F9" || e.key === "Escape") { closeViewer(); }
+        if (e.altKey && e.key === "F2") { openDriveMenu(); }
+        if (e.shiftKey && e.key === "F4") { createNewFile(); }
+    }
+
+    function executeFile() {
+        let p = panels[activePane];
+        let f = (p.drive === 'PC') ? db["PC"][p.sel] : db[p.path][p.sel];
+        if (f.type === 'dir') { p.path = f.name; p.sel = 0; render(); return; }
+        if (f.type === 'up') { p.path = 'ROOT'; p.sel = 0; render(); return; }
+        if (f.type === 'pdf' || f.type === 'zip') { window.open(f.content, '_blank'); return; }
+
+        const area = document.getElementById('viewer-area');
+        const v = document.getElementById('viewer');
+        const j = document.getElementById('jitsi-frame');
+        area.style.display = 'flex';
+        
+        if (f.type === 'exe') {
+            v.style.display = 'none'; j.style.display = 'block'; j.src = f.content;
+        } else {
+            j.style.display = 'none'; v.style.display = 'block'; v.value = f.content || ''; v.readOnly = true;
+        }
+        document.getElementById('view-top').innerText = "VIEWING: " + f.name;
+    }
+
+    function editMode() {
+        let p = panels[activePane];
+        let f = (p.drive === 'PC') ? db["PC"][p.sel] : db[p.path][p.sel];
+        if (f.protected) { alert("Access Denied"); executeFile(); return; }
+        if (f.type === 'dir' || f.type === 'up' || f.type === 'exe') return;
+        executeFile();
+        const v = document.getElementById('viewer'); v.readOnly = false; v.focus();
+        document.getElementById('view-top').innerText = "EDITING: " + f.name;
+    }
+
+    function copyFile() {
+        let src = panels[activePane]; let dst = panels[1 - activePane];
+        let f = (src.drive === 'PC') ? db["PC"][src.sel] : db[src.path][src.sel];
+        if (!f || f.type === 'up' || f.type === 'dir') return;
+        if (dst.drive === 'PC') {
+            db["PC"].push({...f});
+            const blob = new Blob([f.content || ''], {type: 'text/plain'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = f.name; a.click();
+            alert("Copied to C: and Downloaded.");
+        } else {
+            if (!db[dst.path]) db[dst.path] = [{name:'..', type:'up'}];
+            db[dst.path].push({...f}); alert("Copied to Web.");
+        }
+        save();
+    }
+
+    function saveFile() {
+        let p = panels[activePane];
+        let f = (p.drive === 'PC') ? db["PC"][p.sel] : db[p.path][p.sel];
+        if (f.protected) return;
+        f.content = document.getElementById('viewer').value;
+        save(); alert("Saved.");
+    }
+
+    function createNewFile() {
+        let n = prompt("Filename:");
+        if (n) {
+            let p = panels[activePane];
+            let list = (p.drive === 'PC') ? db["PC"] : db[p.path];
+            list.push({name: n.toUpperCase() + '.txt', content: '', type: 'txt'});
+            save();
+        }
+    }
+
+    function createNewDir() {
+        let n = prompt("New Directory:");
+        if (n && panels[activePane].drive !== 'PC') {
+            db[panels[activePane].path].push({name: n.toUpperCase(), type: 'dir'});
+            db[n.toUpperCase()] = [{name:'..', type:'up'}];
+            save();
+        }
+    }
+
+    function deleteFile() {
+        let p = panels[activePane];
+        let list = (p.drive === 'PC') ? db["PC"] : db[p.path];
+        if (list[p.sel].protected) return;
+        if (confirm("Delete " + list[p.sel].name + "?")) { list.splice(p.sel, 1); p.sel = 0; save(); }
+    }
+
+    function sortActive() {
+        let p = panels[activePane];
+        let list = (p.drive === 'PC') ? db["PC"] : db[p.path];
+        list.sort((a,b) => a.name.localeCompare(b.name));
+        render();
+    }
+
+    function openDriveMenu() { document.getElementById('drive-dialog').style.display = 'block'; }
+    function setDrive(d) { panels[activePane].drive = d; document.getElementById('drive-dialog').style.display = 'none'; render(); }
+    function closeViewer() { document.getElementById('viewer-area').style.display = 'none'; document.getElementById('jitsi-frame').src = ""; }
+    function save() { localStorage.setItem('george_vvc_v13', JSON.stringify(db)); render(); }
+
+    render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SchoolBetSim - Electronics Lab by George Usanetashvili</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            height: 100vh;
+            overflow: hidden;
+        }
+        :root {
+            --vc-blue: #0000aa;
+            --vc-cyan: #00aaaa;
+            --vc-yellow: #ffff00;
+            --vc-white: #ffffff;
+            --vc-grid: rgba(0, 170, 170, 0.2);
+            --vc-ruler: #00aaaa;
+        }
+        
+        /* Top Menu */
+        .top-menu {
+            background: var(--vc-cyan);
+            color: #000;
+            display: flex;
+            padding: 2px 0;
+            border-bottom: 2px solid #fff;
+            flex-wrap: wrap;
+            z-index: 100;
+            position: relative;
+        }
+        .menu-item {
+            padding: 2px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            border-right: 1px solid #000;
+        }
+        .menu-item:hover { background: #fff; }
+        
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: var(--vc-cyan);
+            border: 2px solid #fff;
+            min-width: 250px;
+            z-index: 2000;
+            box-shadow: 5px 5px 0 #000;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .menu-item:hover .dropdown { display: block; }
+        .dropdown-link {
+            display: block;
+            padding: 5px 10px;
+            color: #000;
+            text-decoration: none;
+            border-bottom: 1px solid #444;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .dropdown-link:hover { background: #fff; }
+        .dropdown-link.active {
+            background: var(--vc-yellow);
+            font-weight: bold;
+        }
+        .dropdown-header {
+            padding: 5px 10px;
+            background: #000;
+            color: var(--vc-yellow);
+            font-weight: bold;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background: #000;
+            margin: 4px 0;
+        }
+        
+        /* Main Container */
+        .container {
+            display: grid;
+            grid-template-columns: 230px 1fr;
+            height: calc(100vh - 90px);
+        }
+        
+        /* Left Panel */
+        .left-panel {
+            background: var(--vc-blue);
+            border-right: 2px solid #fff;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-header {
+            background: var(--vc-cyan);
+            color: #000;
+            padding: 4px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 2px solid #fff;
+        }
+        .component-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        .component-folder {
+            color: #fff;
+            cursor: pointer;
+            padding: 3px;
+            margin: 2px 0;
+            font-size: 14px;
+        }
+        .component-folder:hover { background: var(--vc-cyan); color: #000; }
+        .component-folder:before { content: "📁 "; }
+        .component-item {
+            margin-left: 20px;
+            color: #ddd;
+            cursor: pointer;
+            padding: 2px;
+            display: none;
+            font-size: 13px;
+        }
+        .component-item:hover { background: var(--vc-cyan); color: #000; }
+        .component-item:before { content: "🔌 "; }
+        
+        /* Game Area */
+        .game-area {
+            position: relative;
+            background: var(--vc-blue);
+            overflow: hidden;
+        }
+        
+        /* Ruler Container */
+        .ruler-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Horizontal Ruler */
+        .ruler-horizontal {
+            position: absolute;
+            bottom: 0;
+            left: 30px;
+            right: 0;
+            height: 30px;
+            background: #000;
+            border-top: 2px solid var(--vc-ruler);
+            border-left: 2px solid var(--vc-ruler);
+            overflow: hidden;
+            z-index: 25;
+        }
+        
+        /* Vertical Ruler */
+        .ruler-vertical {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 30px;
+            width: 30px;
+            background: #000;
+            border-right: 2px solid var(--vc-ruler);
+            border-bottom: 2px solid var(--vc-ruler);
+            overflow: hidden;
+            z-index: 25;
+        }
+        
+        /* Ruler Canvas */
+        .ruler-canvas-h,
+        .ruler-canvas-v {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Grid Canvas */
+        .grid-canvas {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: calc(100% - 30px);
+            height: calc(100% - 30px);
+            pointer-events: none;
+            z-index: 15;
+        }
+        
+        /* Circuit Container */
+        .circuit-container {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            width: calc(100% - 30px);
+            height: calc(100% - 30px);
+            transform-origin: 0 0;
+            z-index: 20;
+        }
+        
+        #circuit-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        /* Components */
+        .component {
+            position: absolute;
+            cursor: move;
+            z-index: 30;
+            user-select: none;
+        }
+        .component.selected { filter: drop-shadow(0 0 8px var(--vc-yellow)); }
+        .terminal {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--vc-yellow);
+            border: 2px solid #fff;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            z-index: 40;
+        }
+        .terminal:hover { transform: translate(-50%, -50%) scale(1.3); background: #fff; }
+        .terminal.selected { box-shadow: 0 0 15px #fff; }
+        
+        /* Status Bar */
+        .status-bar {
+            background: #000;
+            color: var(--vc-yellow);
+            padding: 4px;
+            font-size: 12px;
+            border-top: 1px solid #fff;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        /* F-Bar */
+        .f-bar {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            background: #000;
+            height: 32px;
+            border-top: 2px solid #fff;
+        }
+        .f-btn {
+            font-size: 11px;
+            text-align: center;
+            border-right: 1px solid #333;
+            cursor: pointer;
+            line-height: 32px;
+            color: #fff;
+        }
+        .f-btn:hover { background: #333; }
+        .f-num { font-weight: bold; color: var(--vc-yellow); margin-right: 2px; }
+        
+        /* Modal Windows */
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--vc-blue);
+            border: 3px solid var(--vc-yellow);
+            padding: 20px;
+            z-index: 3000;
+            display: none;
+            min-width: 450px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 10px 10px 0 #000;
+        }
+        .modal h3 { 
+            color: var(--vc-yellow); 
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--vc-cyan);
+            padding-bottom: 5px;
+        }
+        .modal label { 
+            display: block; 
+            color: #fff; 
+            margin: 8px 0 3px;
+            font-size: 13px;
+        }
+        .modal input, .modal select {
+            width: 100%;
+            padding: 5px;
+            background: #000;
+            color: #fff;
+            border: 1px solid var(--vc-cyan);
+            font-family: 'Courier New';
+            font-size: 13px;
+        }
+        .modal button {
+            background: var(--vc-cyan);
+            color: #000;
+            border: none;
+            padding: 8px 15px;
+            margin: 15px 5px 0;
+            font-family: 'Courier New';
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .modal button:hover { background: #fff; }
+        .modal .close-btn {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .modal .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            border-top: 1px solid var(--vc-cyan);
+            padding-top: 15px;
+        }
+        
+        /* Color Grid */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(8,1fr);
+            gap: 5px;
+            margin: 10px 0;
+        }
+        .color-swatch {
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            border: 1px solid #fff;
+        }
+        .color-swatch:hover { transform: scale(1.1); border: 2px solid #fff; }
+        
+        /* Zoom Display */
+        .zoom-display {
+            position: absolute;
+            bottom: 40px;
+            right: 10px;
+            background: #000;
+            color: var(--vc-yellow);
+            padding: 2px 8px;
+            border: 1px solid var(--vc-yellow);
+            font-size: 12px;
+            z-index: 100;
+        }
+        
+        /* Lock Icon */
+        .lock-icon {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #000;
+            color: #fff;
+            text-align: center;
+            line-height: 16px;
+            cursor: pointer;
+            border: 1px solid #fff;
+            margin-left: 5px;
+        }
+        .lock-icon.locked { background: var(--vc-yellow); color: #000; }
+        
+        /* View Toggle Icons */
+        .view-toggle {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: var(--vc-cyan);
+            color: #000;
+            text-align: center;
+            line-height: 20px;
+            margin-right: 5px;
+            font-weight: bold;
+        }
+        
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Complete Top Menu with Design/Schematic Toggle -->
+<div class="top-menu">
+    <div class="menu-item">Game
+        <div class="dropdown">
+            <div class="dropdown-link" onclick="game.newGame()">New Game</div>
+            <div class="dropdown-link" onclick="game.saveGame()">Save Game (.sbs)</div>
+            <div class="dropdown-link" onclick="game.loadGame()">Open Game</div>
+            <div class="dropdown-header">Export</div>
+            <div class="dropdown-link" onclick="game.exportPNG()">Export as PNG</div>
+            <div class="dropdown-link" onclick="game.exportPDF()">Export as PDF</div>
+        </div>
+    </div>
+    
+    <div class="menu-item">Edit
+        <div class="dropdown">
+            <div class="dropdown-link" onclick="game.undo()">Undo (Ctrl+Z)</div>
+            <div class="dropdown-link" onclick="game.redo()">Redo (Ctrl+Y)</div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-link" onclick="game.copySelected()">Copy (Ctrl+C)</div>
+            <div class="dropdown-link" onclick="game.deleteSelected()">Delete (Del)</div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-link" onclick="game.selectAll()">Select All (Ctrl+A)</div>
+            <div class="dropdown-link" onclick="game.deselectAll()">Deselect All</div>
+        </div>
+    </div>
+    
+    <!-- View Menu with Design/Schematic Toggle -->
+    <div class="menu-item">View
+        <div class="dropdown">
+            <div class="dropdown-header">View Mode</div>
+            <div class="dropdown-link" onclick="game.setViewMode('design')" id="viewDesign">
+                <span class="view-toggle" id="designCheck">✓</span> Design View (Realistic)
+            </div>
+            <div class="dropdown-link" onclick="game.setViewMode('schematic')" id="viewSchematic">
+                <span class="view-toggle" id="schematicCheck"> </span> Schematic View (Symbols)
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-link" onclick="game.toggleGrid()" id="gridToggle">✓ Show Grid</div>
+            <div class="dropdown-link" onclick="game.toggleRulers()" id="rulerToggle">✓ Show Rulers</div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-header">Grid Size</div>
+            <div class="dropdown-link" onclick="game.setGridSize(10)">10px</div>
+            <div class="dropdown-link" onclick="game.setGridSize(20)">20px</div>
+            <div class="dropdown-link" onclick="game.setGridSize(50)">50px</div>
+        </div>
+    </div>
+    
+    <div class="menu-item" id="levelDisplay">Level: 1</div>
+    <div class="menu-item" id="scoreDisplay">Score: 0</div>
+    
+    <div class="menu-item">Wire
+        <div class="dropdown">
+            <div class="dropdown-header">Wire Type</div>
+            <div class="dropdown-link" onclick="game.setWireType('soldering')">Soldering Connection</div>
+            <div class="dropdown-link" onclick="game.setWireType('arduino_male_male')">Arduino Male-Male</div>
+            <div class="dropdown-link" onclick="game.setWireType('arduino_male_female')">Arduino Male-Female</div>
+            <div class="dropdown-link" onclick="game.setWireType('arduino_female_female')">Arduino Female-Female</div>
+            <div class="dropdown-link" onclick="game.setWireType('alligator')">Alligator Clip</div>
+        </div>
+    </div>
+    
+    <div class="menu-item">Color
+        <div class="dropdown">
+            <div class="dropdown-header">Preset Colors</div>
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:2px; padding:5px;">
+                <div style="background:#FF0000; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#FF0000')"></div>
+                <div style="background:#00FF00; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#00FF00')"></div>
+                <div style="background:#0000FF; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#0000FF')"></div>
+                <div style="background:#FFFF00; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#FFFF00')"></div>
+                <div style="background:#FF00FF; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#FF00FF')"></div>
+                <div style="background:#00FFFF; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#00FFFF')"></div>
+                <div style="background:#FFFFFF; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#FFFFFF')"></div>
+                <div style="background:#000000; width:30px; height:30px; cursor:pointer;" onclick="game.setColor('#000000')"></div>
+            </div>
+            <div class="dropdown-header">Custom RGB</div>
+            <div style="padding:5px;">
+                <input type="number" id="colorR" min="0" max="255" value="255" style="width:60px;"> R
+                <input type="number" id="colorG" min="0" max="255" value="255" style="width:60px;"> G
+                <input type="number" id="colorB" min="0" max="255" value="0" style="width:60px;"> B
+                <button onclick="game.setCustomColor()" style="margin-top:5px;">Apply</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="menu-item">Zoom
+        <div class="dropdown">
+            <div class="dropdown-link" onclick="game.setZoom('in')">Zoom In (+)</div>
+            <div class="dropdown-link" onclick="game.setZoom('out')">Zoom Out (-)</div>
+            <div class="dropdown-link" onclick="game.setZoom('100')">Zoom 100%</div>
+            <div class="dropdown-link" onclick="game.setZoom('full')">Full Screen</div>
+            <div class="dropdown-link" onclick="game.setZoom('normal')">Normal View</div>
+            <div class="dropdown-header">Custom Zoom</div>
+            <div style="padding:5px;">
+                <input type="number" id="customZoom" min="10" max="500" value="100" style="width:100px;"> %
+                <button onclick="game.setCustomZoom()">Apply</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="menu-item">Options
+        <div class="dropdown">
+            <div class="dropdown-link" onclick="game.showComponentSize()">Component Size</div>
+            <div class="dropdown-link" onclick="game.showComponentOptions()">Component Options</div>
+        </div>
+    </div>
+    
+    <div class="menu-item">Help
+        <div class="dropdown">
+            <div class="dropdown-link" onclick="game.showHelp()">Help (F1)</div>
+            <div class="dropdown-link" onclick="game.openBook()">The Basics of Electronics</div>
+            <div class="dropdown-link" onclick="game.showAbout()">About</div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="container">
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <div class="panel-header">COMPONENT LIBRARY</div>
+        <div class="component-list" id="componentList"></div>
+        <div class="status-bar">
+            <span id="status">Ready</span>
+            <span>v1.0</span>
+        </div>
+    </div>
+    
+    <!-- Game Area -->
+    <div class="game-area" id="gameArea">
+        <div class="ruler-container">
+            <!-- Horizontal Ruler -->
+            <div class="ruler-horizontal" id="rulerH">
+                <canvas id="rulerHCanvas" class="ruler-canvas-h"></canvas>
+            </div>
+            
+            <!-- Vertical Ruler -->
+            <div class="ruler-vertical" id="rulerV">
+                <canvas id="rulerVCanvas" class="ruler-canvas-v"></canvas>
+            </div>
+            
+            <!-- Grid Canvas -->
+            <canvas id="gridCanvas" class="grid-canvas"></canvas>
+            
+            <!-- Circuit Container -->
+            <div class="circuit-container" id="circuitContainer">
+                <canvas id="circuitCanvas"></canvas>
+            </div>
+        </div>
+        <div class="zoom-display" id="zoomDisplay">100%</div>
+    </div>
+</div>
+
+<!-- F-Bar -->
+<div class="f-bar">
+    <div class="f-btn" onclick="game.showHelp()"><span class="f-num">1</span>Help</div>
+    <div class="f-btn" onclick="game.saveGame()"><span class="f-num">2</span>Save</div>
+    <div class="f-btn" onclick="game.loadGame()"><span class="f-num">3</span>Open</div>
+    <div class="f-btn" onclick="game.showComponentOptions()"><span class="f-num">4</span>Opt</div>
+    <div class="f-btn" onclick="game.copySelected()"><span class="f-num">5</span>Copy</div>
+    <div class="f-btn" onclick="game.toggleFlow()"><span class="f-num">6</span>Flow</div>
+    <div class="f-btn" onclick="game.searchMode()"><span class="f-num">7</span>Find</div>
+    <div class="f-btn" onclick="game.deleteSelected()"><span class="f-num">8</span>Del</div>
+    <div class="f-btn" onclick="game.testCircuit()"><span class="f-num">9</span>Test</div>
+    <div class="f-btn" onclick="window.open('https://caucasfactory.github.io/')"><span class="f-num">10</span>Main</div>
+</div>
+
+<!-- Modal: Component Size -->
+<div class="modal" id="sizeModal">
+    <span class="close-btn" onclick="game.closeModal('sizeModal')">✖</span>
+    <h3>⚙️ Component Size & Position</h3>
+    
+    <label>Size X: <input type="number" id="sizeX" min="20" max="200" value="60"></label>
+    <label>Size Y: <input type="number" id="sizeY" min="20" max="200" value="70">
+        <span class="lock-icon" id="sizeLock" onclick="game.toggleSizeLock()">🔒</span>
+    </label>
+    <label>Rotation: <input type="number" id="rotateVal" min="0" max="360" value="0"></label>
+    <label>Position X: <input type="number" id="posX" value="0"></label>
+    <label>Position Y: <input type="number" id="posY" value="0"></label>
+    <label>Wire Diameter: <input type="number" id="wireSize" min="1" max="10" value="2"></label>
+    
+    <div class="button-group">
+        <button onclick="game.applySizeAndRotate()">Apply</button>
+        <button onclick="game.resetSize()">Reset</button>
+        <button onclick="game.closeModal('sizeModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- Modal: Component Options -->
+<div class="modal" id="optionsModal">
+    <span class="close-btn" onclick="game.closeModal('optionsModal')">✖</span>
+    <h3>🔧 Component Properties</h3>
+    
+    <div id="compProperties">
+        <label>Part Number (count): <input type="number" id="partCount" value="1" min="1" max="999"></label>
+        <label>Part ID: <input type="text" id="partID" value="" placeholder="e.g., BC547"></label>
+        <label>Part Name: <input type="text" id="partName" value="" placeholder="User defined name"></label>
+        
+        <label>Model:
+            <select id="compModel">
+                <option value="dip">DIP (Through-hole)</option>
+                <option value="smd">SMD (Surface mount)</option>
+            </select>
+        </label>
+        
+        <label>Type:
+            <select id="compType">
+                <option value="npn">NPN</option>
+                <option value="pnp">PNP</option>
+                <option value="electrolyte">Electrolyte</option>
+                <option value="ceramic">Ceramic</option>
+                <option value="film">Film</option>
+            </select>
+        </label>
+        
+        <label>Color: <input type="color" id="compColor" value="#ffff00"></label>
+        
+        <h4 style="color:var(--vc-yellow); margin-top:10px;">Electrical Specs</h4>
+        <label>Voltage (V): <input type="number" id="compVoltage" value="0" step="0.1"></label>
+        <label>Wattage (W): <input type="number" id="compWatt" value="0" step="0.1"></label>
+        <label>Current (A): <input type="number" id="compCurrent" value="0" step="0.001"></label>
+        <label>Resistance (Ω): <input type="number" id="compResistance" value="0" step="1"></label>
+        <label>Capacitance (µF): <input type="number" id="compCapacitance" value="0" step="0.1"></label>
+        <label>Gate Voltage (V): <input type="number" id="compGateV" value="0" step="0.1"></label>
+        <label>Gate Current (mA): <input type="number" id="compGateA" value="0" step="0.1"></label>
+    </div>
+    
+    <div class="button-group">
+        <button onclick="game.applyOptions()">Apply</button>
+        <button onclick="game.insertComponent()">Insert</button>
+        <button onclick="game.resetOptions()">Reset</button>
+        <button onclick="game.closeModal('optionsModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- Modal: File Save -->
+<div class="modal" id="saveModal">
+    <span class="close-btn" onclick="game.closeModal('saveModal')">✖</span>
+    <h3>💾 Save Game</h3>
+    <label>Filename: <input type="text" id="saveFilename" value="circuit.sbs"></label>
+    <label>Save to:
+        <select id="saveLocation">
+            <option value="download">Downloads Folder</option>
+            <option value="local">Browser Storage</option>
+        </select>
+    </label>
+    <div class="button-group">
+        <button onclick="game.confirmSave()">Save</button>
+        <button onclick="game.closeModal('saveModal')">Cancel</button>
+    </div>
+</div>
+
+<!-- Modal: File Open -->
+<div class="modal" id="openModal">
+    <span class="close-btn" onclick="game.closeModal('openModal')">✖</span>
+    <h3>📂 Open Game</h3>
+    <label>Open from:
+        <select id="openLocation" onchange="game.toggleOpenSource()">
+            <option value="local">Browser Storage</option>
+            <option value="file">File from Computer</option>
+        </select>
+    </label>
+    <div id="localFilesList" style="max-height:200px; overflow-y:auto; border:1px solid var(--vc-cyan); padding:5px; margin:10px 0;">
+        <!-- Saved games list will appear here -->
+    </div>
+    <input type="file" id="fileInput" accept=".sbs" style="display:none;">
+    <div class="button-group">
+        <button onclick="game.confirmOpen()">Open</button>
+        <button onclick="game.closeModal('openModal')">Cancel</button>
+    </div>
+</div>
+
+<script>
+// SchoolBetSim - Complete Electronics Lab with Design/Schematic Toggle
+const game = {
+    // Core data
+    components: [],
+    wires: [],
+    nextId: 1,
+    selectedId: null,
+    selectedTerminal: null,
+    score: 0,
+    level: 1,
+    db: null,
+    zoom: 1,
+    wireType: 'soldering',
+    wireColor: '#ffff00',
+    flowEnabled: false,
+    sizeLocked: true,
+    fullScreen: false,
+    
+    // NEW: View mode
+    viewMode: 'design', // 'design' or 'schematic'
+    
+    // History for Undo/Redo
+    history: [],
+    historyIndex: -1,
+    
+    // Grid and Ruler settings
+    showGrid: true,
+    showRulers: true,
+    gridSize: 20,
+    
+    // Initialize
+    async init() {
+        await this.loadDatabase();
+        this.setupCanvas();
+        this.renderTree();
+        this.setupKeyListeners();
+        this.animate();
+        this.loadSavedGamesList();
+        this.initRulersAndGrid();
+        document.getElementById('status').innerText = 'Ready - Click folders to expand';
+        this.updateZoomDisplay();
+        this.updateViewToggle(); // Initialize view toggle display
+    },
+    
+    // Load component database
+    async loadDatabase() {
+        try {
+            const response = await fetch('components.json');
+            this.db = await response.json();
+            console.log('Database loaded with', Object.keys(this.db.components).length, 'categories');
+        } catch(e) {
+            console.error('Failed to load components.json', e);
+            // Fallback with minimal data
+            this.db = {
+                components: {
+                    battery: { name: "Battery", icon: "🔋", items: {
+                        "9v": { name: "9V Battery", pins: 2, pinNames: ["+","-"], designView: "<rect x='10' y='5' width='30' height='50' fill='#666' stroke='#fff'/>", schematicView: "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00'/><line x1='30' y1='20' x2='30' y2='40' stroke='#ffff00'/>" }
+                    }}
+                }
+            };
+        }
+    },
+    
+    // Setup canvas
+    setupCanvas() {
+        this.canvas = document.getElementById('circuitCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+    },
+    
+    resize() {
+        const area = document.getElementById('gameArea');
+        this.canvas.width = area.clientWidth - 30;
+        this.canvas.height = area.clientHeight - 30;
+        this.updateRulers();
+        this.updateGrid();
+    },
+    
+    // Initialize rulers and grid
+    initRulersAndGrid() {
+        this.updateRulers();
+        this.updateGrid();
+        window.addEventListener('resize', () => {
+            this.updateRulers();
+            this.updateGrid();
+        });
+    },
+    
+    // Update rulers
+    updateRulers() {
+        if (!this.showRulers) {
+            document.getElementById('rulerH').style.display = 'none';
+            document.getElementById('rulerV').style.display = 'none';
+            return;
+        }
+        
+        document.getElementById('rulerH').style.display = 'block';
+        document.getElementById('rulerV').style.display = 'block';
+        
+        const area = document.getElementById('gameArea');
+        const rulerHCanvas = document.getElementById('rulerHCanvas');
+        const rulerVCanvas = document.getElementById('rulerVCanvas');
+        
+        // Horizontal ruler
+        rulerHCanvas.width = area.clientWidth - 30;
+        rulerHCanvas.height = 30;
+        const ctxH = rulerHCanvas.getContext('2d');
+        ctxH.clearRect(0, 0, rulerHCanvas.width, rulerHCanvas.height);
+        
+        ctxH.strokeStyle = '#00aaaa';
+        ctxH.fillStyle = '#00aaaa';
+        ctxH.font = '10px Courier New';
+        ctxH.lineWidth = 1;
+        
+        for (let x = 0; x < rulerHCanvas.width; x += this.gridSize) {
+            ctxH.beginPath();
+            ctxH.moveTo(x, 25);
+            ctxH.lineTo(x, 30);
+            ctxH.stroke();
+            
+            if (x % 50 === 0) {
+                ctxH.fillText(x, x + 2, 12);
+            }
+        }
+        
+        // Vertical ruler
+        rulerVCanvas.width = 30;
+        rulerVCanvas.height = area.clientHeight - 30;
+        const ctxV = rulerVCanvas.getContext('2d');
+        ctxV.clearRect(0, 0, rulerVCanvas.width, rulerVCanvas.height);
+        
+        ctxV.strokeStyle = '#00aaaa';
+        ctxV.fillStyle = '#00aaaa';
+        ctxV.font = '10px Courier New';
+        
+        for (let y = 0; y < rulerVCanvas.height; y += this.gridSize) {
+            ctxV.beginPath();
+            ctxV.moveTo(25, y);
+            ctxV.lineTo(30, y);
+            ctxV.stroke();
+            
+            if (y % 50 === 0) {
+                ctxV.save();
+                ctxV.translate(10, y + 4);
+                ctxV.rotate(-Math.PI/2);
+                ctxV.fillText(y, 0, 0);
+                ctxV.restore();
+            }
+        }
+    },
+    
+    // Update grid
+    updateGrid() {
+        const gridCanvas = document.getElementById('gridCanvas');
+        
+        if (!this.showGrid) {
+            gridCanvas.style.display = 'none';
+            return;
+        }
+        
+        gridCanvas.style.display = 'block';
+        
+        const area = document.getElementById('gameArea');
+        gridCanvas.width = area.clientWidth - 30;
+        gridCanvas.height = area.clientHeight - 30;
+        
+        const ctx = gridCanvas.getContext('2d');
+        ctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+        
+        ctx.strokeStyle = 'rgba(0, 170, 170, 0.2)';
+        ctx.lineWidth = 1;
+        
+        for (let x = 0; x < gridCanvas.width; x += this.gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, gridCanvas.height);
+            ctx.stroke();
+        }
+        
+        for (let y = 0; y < gridCanvas.height; y += this.gridSize) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            ctx.lineTo(gridCanvas.width, y);
+            ctx.stroke();
+        }
+    },
+    
+    // Toggle grid
+    toggleGrid() {
+        this.showGrid = !this.showGrid;
+        document.getElementById('gridToggle').innerHTML = (this.showGrid ? '✓ ' : '  ') + 'Show Grid';
+        this.updateGrid();
+    },
+    
+    // Toggle rulers
+    toggleRulers() {
+        this.showRulers = !this.showRulers;
+        document.getElementById('rulerToggle').innerHTML = (this.showRulers ? '✓ ' : '  ') + 'Show Rulers';
+        this.updateRulers();
+    },
+    
+    // Set grid size
+    setGridSize(size) {
+        this.gridSize = size;
+        this.updateRulers();
+        this.updateGrid();
+    },
+    
+    // Save state for undo
+    saveToHistory() {
+        this.history = this.history.slice(0, this.historyIndex + 1);
+        
+        const state = {
+            components: JSON.parse(JSON.stringify(this.components)),
+            wires: JSON.parse(JSON.stringify(this.wires))
+        };
+        
+        this.history.push(state);
+        this.historyIndex = this.history.length - 1;
+        
+        if (this.history.length > 50) {
+            this.history.shift();
+            this.historyIndex--;
+        }
+    },
+    
+    // Undo
+    undo() {
+        if (this.historyIndex > 0) {
+            this.historyIndex--;
+            const state = this.history[this.historyIndex];
+            this.components = JSON.parse(JSON.stringify(state.components));
+            this.wires = JSON.parse(JSON.stringify(state.wires));
+            this.renderComponents();
+            this.updateStatus('Undo');
+        } else {
+            this.updateStatus('Nothing to undo');
+        }
+    },
+    
+    // Redo
+    redo() {
+        if (this.historyIndex < this.history.length - 1) {
+            this.historyIndex++;
+            const state = this.history[this.historyIndex];
+            this.components = JSON.parse(JSON.stringify(state.components));
+            this.wires = JSON.parse(JSON.stringify(state.wires));
+            this.renderComponents();
+            this.updateStatus('Redo');
+        } else {
+            this.updateStatus('Nothing to redo');
+        }
+    },
+    
+    // Copy selected
+    copySelected() {
+        if (this.selectedId) {
+            const original = this.components.find(c => c.id === this.selectedId);
+            if (original) {
+                const copy = {
+                    ...original,
+                    id: this.nextId++,
+                    x: original.x + 30,
+                    y: original.y + 30,
+                    partCount: 1
+                };
+                this.saveToHistory();
+                this.components.push(copy);
+                this.selectedId = copy.id;
+                this.renderComponents();
+                this.updateStatus('Component copied');
+            }
+        }
+    },
+    
+    // Select all
+    selectAll() {
+        if (this.components.length > 0) {
+            this.selectedId = this.components[0].id;
+            this.renderComponents();
+            this.updateStatus('Selected first component');
+        }
+    },
+    
+    // Deselect all
+    deselectAll() {
+        this.selectedId = null;
+        this.selectedTerminal = null;
+        this.renderComponents();
+    },
+    
+    // Keyboard shortcuts
+    setupKeyListeners() {
+        window.onkeydown = (e) => {
+            if(e.key === 'F1') { this.showHelp(); e.preventDefault(); }
+            if(e.key === 'F2') { this.saveGame(); e.preventDefault(); }
+            if(e.key === 'F3') { this.loadGame(); e.preventDefault(); }
+            if(e.key === 'F5') { this.copySelected(); e.preventDefault(); }
+            if(e.key === 'F8') { this.deleteSelected(); e.preventDefault(); }
+            if(e.key === 'F9') { this.testCircuit(); e.preventDefault(); }
+            if(e.key.toLowerCase() === 'r') { this.rotateSelected(); e.preventDefault(); }
+            if(e.key === '+' || e.key === '=') { this.setZoom('in'); e.preventDefault(); }
+            if(e.key === '-') { this.setZoom('out'); e.preventDefault(); }
+            
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 'z' || e.key === 'Z') { this.undo(); e.preventDefault(); }
+                if (e.key === 'y' || e.key === 'Y') { this.redo(); e.preventDefault(); }
+                if (e.key === 'c' || e.key === 'C') { this.copySelected(); e.preventDefault(); }
+                if (e.key === 'a' || e.key === 'A') { this.selectAll(); e.preventDefault(); }
+            }
+            
+            if (e.key === 'Delete') {
+                this.deleteSelected();
+                e.preventDefault();
+            }
+        };
+    },
+    
+    // Render component tree
+    renderTree() {
+        const list = document.getElementById('componentList');
+        list.innerHTML = '';
+        
+        for(let [key, category] of Object.entries(this.db.components)) {
+            const folder = document.createElement('div');
+            folder.className = 'component-folder';
+            folder.textContent = `${category.icon || '📦'} ${category.name}`;
+            folder.onclick = () => this.toggleFolder(key);
+            list.appendChild(folder);
+            
+            for(let [itemKey, item] of Object.entries(category.items)) {
+                const div = document.createElement('div');
+                div.className = 'component-item';
+                div.id = `${key}-${itemKey}`;
+                div.textContent = `  ${item.name}`;
+                div.onclick = () => this.addComponent(key, itemKey);
+                list.appendChild(div);
+            }
+        }
+    },
+    
+    toggleFolder(folder) {
+        const items = document.querySelectorAll(`[id^="${folder}-"]`);
+        items.forEach(el => {
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        });
+    },
+    
+    // Add new component
+    addComponent(category, itemKey) {
+        const categoryData = this.db.components[category];
+        const item = categoryData.items[itemKey];
+        
+        if (!item) return;
+        
+        const comp = {
+            id: this.nextId++,
+            category: category,
+            itemKey: itemKey,
+            name: item.name,
+            pins: item.pins,
+            pinNames: item.pinNames,
+            type: item.type || 'passive',
+            designView: item.designView,
+            schematicView: item.schematicView,
+            x: 150 + Math.random() * 300,
+            y: 100 + Math.random() * 150,
+            rotation: 0,
+            sizeX: 60,
+            sizeY: 70,
+            color: '#ffff00',
+            partID: '',
+            partName: '',
+            partCount: 1,
+            model: 'dip',
+            voltage: 0,
+            watt: 0,
+            current: 0,
+            resistance: 0,
+            capacitance: 0,
+            gateV: 0,
+            gateA: 0
+        };
+        
+        this.saveToHistory();
+        this.components.push(comp);
+        this.selectedId = comp.id;
+        this.renderComponents();
+        this.updateStatus(`Added ${item.name} - Press R to rotate`);
+    },
+    
+    // Render all components
+    renderComponents() {
+        const container = document.querySelector('.circuit-container');
+        document.querySelectorAll('.component').forEach(el => el.remove());
+        
+        this.components.forEach(comp => {
+            const div = document.createElement('div');
+            div.className = 'component';
+            if(this.selectedId === comp.id) div.classList.add('selected');
+            div.style.left = comp.x + 'px';
+            div.style.top = comp.y + 'px';
+            div.style.transform = `rotate(${comp.rotation}deg)`;
+            div.dataset.id = comp.id;
+            
+            // Select SVG based on view mode
+            let svg = '';
+            if (this.viewMode === 'design' && comp.designView) {
+                svg = comp.designView;
+            } else if (this.viewMode === 'schematic' && comp.schematicView) {
+                svg = comp.schematicView;
+            } else {
+                // Fallback
+                svg = comp.designView || comp.schematicView || '<circle cx="30" cy="30" r="20" fill="#666"/>';
+            }
+            
+            // Add terminals
+            const pinSpacing = 40 / (comp.pins + 1);
+            for(let i = 0; i < comp.pins; i++) {
+                const pinName = comp.pinNames[i];
+                const xPos = 10 + (i + 1) * pinSpacing;
+                svg += `<circle class="terminal" cx="${xPos}" cy="55" r="4" fill="${comp.color}" data-pin="${pinName}" data-component="${comp.id}"/>`;
+            }
+            
+            div.innerHTML = `<svg width="${comp.sizeX || 60}" height="${comp.sizeY || 70}">${svg}</svg>`;
+            
+            // Make draggable
+            div.onmousedown = (e) => this.startDrag(e, comp.id);
+            
+            // Terminal clicks
+            div.querySelectorAll('.terminal').forEach(term => {
+                term.onclick = (e) => {
+                    e.stopPropagation();
+                    this.terminalClick(comp.id, term.dataset.pin);
+                };
+            });
+            
+            container.appendChild(div);
+        });
+        
+        this.drawWires();
+    },
+    
+    // Start drag
+    startDrag(e, id) {
+        e.preventDefault();
+        const comp = this.components.find(c => c.id === id);
+        if(!comp) return;
+        
+        this.selectedId = id;
+        this.renderComponents();
+        
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startCompX = comp.x;
+        const startCompY = comp.y;
+        
+        const onMove = (e) => {
+            comp.x = startCompX + (e.clientX - startX);
+            comp.y = startCompY + (e.clientY - startY);
+            this.renderComponents();
+        };
+        
+        const onUp = () => {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+            this.saveToHistory();
+        };
+        
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    },
+    
+    // Rotate selected
+    rotateSelected() {
+        if(this.selectedId) {
+            const comp = this.components.find(c => c.id === this.selectedId);
+            if(comp) {
+                this.saveToHistory();
+                comp.rotation = (comp.rotation + 90) % 360;
+                this.renderComponents();
+                this.updateStatus(`Rotated to ${comp.rotation}°`);
+            }
+        } else {
+            this.updateStatus('Select a component first');
+        }
+    },
+    
+    // Terminal connection
+    terminalClick(compId, pin) {
+        if(!this.selectedTerminal) {
+            this.selectedTerminal = {compId, pin};
+            this.updateStatus(`Selected ${pin} - click another terminal`);
+        } else {
+            if(this.selectedTerminal.compId !== compId || this.selectedTerminal.pin !== pin) {
+                this.saveToHistory();
+                this.wires.push({
+                    from: this.selectedTerminal,
+                    to: {compId, pin},
+                    type: this.wireType,
+                    color: this.wireColor
+                });
+                this.updateStatus('Wire connected');
+            }
+            this.selectedTerminal = null;
+        }
+    },
+    
+    // Draw wires
+    drawWires() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.wires.forEach(wire => {
+            const fromTerm = document.querySelector(`.component[data-id="${wire.from.compId}"] .terminal[data-pin="${wire.from.pin}"]`);
+            const toTerm = document.querySelector(`.component[data-id="${wire.to.compId}"] .terminal[data-pin="${wire.to.pin}"]`);
+            
+            if(fromTerm && toTerm) {
+                const fromRect = fromTerm.getBoundingClientRect();
+                const toRect = toTerm.getBoundingClientRect();
+                const containerRect = document.querySelector('.circuit-container').getBoundingClientRect();
+                
+                const fromX = (fromRect.left + fromRect.width/2 - containerRect.left) / this.zoom;
+                const fromY = (fromRect.top + fromRect.height/2 - containerRect.top) / this.zoom;
+                const toX = (toRect.left + toRect.width/2 - containerRect.left) / this.zoom;
+                const toY = (toRect.top + toRect.height/2 - containerRect.top) / this.zoom;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(fromX, fromY);
+                this.ctx.lineTo(toX, toY);
+                this.ctx.strokeStyle = wire.color || this.wireColor;
+                
+                if(wire.type === 'alligator') {
+                    this.ctx.lineWidth = 4;
+                    this.ctx.setLineDash([5, 3]);
+                } else if(wire.type.includes('arduino')) {
+                    this.ctx.lineWidth = 3;
+                } else {
+                    this.ctx.lineWidth = 2;
+                    this.ctx.setLineDash([]);
+                }
+                
+                this.ctx.stroke();
+                this.ctx.setLineDash([]);
+                
+                if(this.flowEnabled) {
+                    this.drawElectronFlow(fromX, fromY, toX, toY);
+                }
+            }
+        });
+    },
+    
+    drawElectronFlow(x1, y1, x2, y2) {
+        const t = (Date.now() / 200) % 1;
+        const x = x1 + (x2 - x1) * t;
+        const y = y1 + (y2 - y1) * t;
+        
+        this.ctx.beginPath();
+        this.ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        this.ctx.fillStyle = '#00ff00';
+        this.ctx.fill();
+    },
+    
+    // NEW: Set view mode (design/schematic)
+    setViewMode(mode) {
+        this.viewMode = mode;
+        this.updateViewToggle();
+        this.renderComponents();
+        this.updateStatus(`View mode: ${mode === 'design' ? 'Design (Realistic)' : 'Schematic (Symbols)'}`);
+    },
+    
+    // NEW: Update view toggle display
+    updateViewToggle() {
+        const designCheck = document.getElementById('designCheck');
+        const schematicCheck = document.getElementById('schematicCheck');
+        
+        if (this.viewMode === 'design') {
+            designCheck.innerHTML = '✓';
+            schematicCheck.innerHTML = ' ';
+        } else {
+            designCheck.innerHTML = ' ';
+            schematicCheck.innerHTML = '✓';
+        }
+    },
+    
+    // Component Size Window
+    showComponentSize() {
+        if(!this.selectedId) {
+            alert('Select a component first');
+            return;
+        }
+        const comp = this.components.find(c => c.id === this.selectedId);
+        if(comp) {
+            document.getElementById('sizeX').value = comp.sizeX || 60;
+            document.getElementById('sizeY').value = comp.sizeY || 70;
+            document.getElementById('rotateVal').value = comp.rotation || 0;
+            document.getElementById('posX').value = comp.x;
+            document.getElementById('posY').value = comp.y;
+        }
+        document.getElementById('sizeModal').style.display = 'block';
+    },
+    
+    toggleSizeLock() {
+        this.sizeLocked = !this.sizeLocked;
+        const lock = document.getElementById('sizeLock');
+        lock.classList.toggle('locked', this.sizeLocked);
+        lock.textContent = this.sizeLocked ? '🔒' : '🔓';
+    },
+    
+    applySizeAndRotate() {
+        if(this.selectedId) {
+            const comp = this.components.find(c => c.id === this.selectedId);
+            if(comp) {
+                this.saveToHistory();
+                const newX = parseInt(document.getElementById('sizeX').value);
+                const newY = parseInt(document.getElementById('sizeY').value);
+                
+                if(this.sizeLocked) {
+                    const ratio = comp.sizeX / comp.sizeY;
+                    comp.sizeX = newX;
+                    comp.sizeY = Math.round(newX / ratio);
+                } else {
+                    comp.sizeX = newX;
+                    comp.sizeY = newY;
+                }
+                
+                comp.rotation = parseInt(document.getElementById('rotateVal').value);
+                comp.x = parseInt(document.getElementById('posX').value);
+                comp.y = parseInt(document.getElementById('posY').value);
+                
+                this.renderComponents();
+            }
+        }
+        this.closeModal('sizeModal');
+    },
+    
+    resetSize() {
+        if(this.selectedId) {
+            const comp = this.components.find(c => c.id === this.selectedId);
+            if(comp) {
+                comp.sizeX = 60;
+                comp.sizeY = 70;
+                comp.rotation = 0;
+                this.renderComponents();
+            }
+        }
+    },
+    
+    // Component Options Window
+    showComponentOptions() {
+        if(!this.selectedId) {
+            alert('Select a component first');
+            return;
+        }
+        const comp = this.components.find(c => c.id === this.selectedId);
+        if(comp) {
+            document.getElementById('partCount').value = comp.partCount || 1;
+            document.getElementById('partID').value = comp.partID || '';
+            document.getElementById('partName').value = comp.partName || comp.name;
+            document.getElementById('compModel').value = comp.model || 'dip';
+            document.getElementById('compType').value = comp.type || 'npn';
+            document.getElementById('compColor').value = comp.color || '#ffff00';
+            document.getElementById('compVoltage').value = comp.voltage || 0;
+            document.getElementById('compWatt').value = comp.watt || 0;
+            document.getElementById('compCurrent').value = comp.current || 0;
+            document.getElementById('compResistance').value = comp.resistance || 0;
+            document.getElementById('compCapacitance').value = comp.capacitance || 0;
+            document.getElementById('compGateV').value = comp.gateV || 0;
+            document.getElementById('compGateA').value = comp.gateA || 0;
+        }
+        document.getElementById('optionsModal').style.display = 'block';
+    },
+    
+    applyOptions() {
+        if(this.selectedId) {
+            const comp = this.components.find(c => c.id === this.selectedId);
+            if(comp) {
+                this.saveToHistory();
+                comp.partCount = parseInt(document.getElementById('partCount').value);
+                comp.partID = document.getElementById('partID').value;
+                comp.partName = document.getElementById('partName').value;
+                comp.model = document.getElementById('compModel').value;
+                comp.type = document.getElementById('compType').value;
+                comp.color = document.getElementById('compColor').value;
+                comp.voltage = parseFloat(document.getElementById('compVoltage').value);
+                comp.watt = parseFloat(document.getElementById('compWatt').value);
+                comp.current = parseFloat(document.getElementById('compCurrent').value);
+                comp.resistance = parseFloat(document.getElementById('compResistance').value);
+                comp.capacitance = parseFloat(document.getElementById('compCapacitance').value);
+                comp.gateV = parseFloat(document.getElementById('compGateV').value);
+                comp.gateA = parseFloat(document.getElementById('compGateA').value);
+                
+                this.renderComponents();
+                this.updateStatus('Component options applied');
+            }
+        }
+        this.closeModal('optionsModal');
+    },
+    
+    insertComponent() {
+        this.applyOptions();
+        this.copySelected();
+    },
+    
+    resetOptions() {
+        if(this.selectedId) {
+            const comp = this.components.find(c => c.id === this.selectedId);
+            if(comp) {
+                comp.partCount = 1;
+                comp.partID = '';
+                comp.partName = comp.name;
+                comp.model = 'dip';
+                comp.color = '#ffff00';
+                comp.voltage = 0;
+                comp.watt = 0;
+                comp.current = 0;
+                comp.resistance = 0;
+                comp.capacitance = 0;
+                comp.gateV = 0;
+                comp.gateA = 0;
+                
+                document.getElementById('partCount').value = 1;
+                document.getElementById('partID').value = '';
+                document.getElementById('partName').value = comp.name;
+                document.getElementById('compModel').value = 'dip';
+                document.getElementById('compColor').value = '#ffff00';
+                document.getElementById('compVoltage').value = 0;
+                document.getElementById('compWatt').value = 0;
+                document.getElementById('compCurrent').value = 0;
+                document.getElementById('compResistance').value = 0;
+                document.getElementById('compCapacitance').value = 0;
+                document.getElementById('compGateV').value = 0;
+                document.getElementById('compGateA').value = 0;
+            }
+        }
+    },
+    
+    // Color functions
+    setColor(color) {
+        this.wireColor = color;
+        if(this.selectedId) {
+            const comp = this.components.find(c => c.id === this.selectedId);
+            if(comp) {
+                this.saveToHistory();
+                comp.color = color;
+                this.renderComponents();
+            }
+        }
+        this.updateStatus(`Color set`);
+    },
+    
+    setCustomColor() {
+        const r = document.getElementById('colorR').value;
+        const g = document.getElementById('colorG').value;
+        const b = document.getElementById('colorB').value;
+        this.setColor(`rgb(${r},${g},${b})`);
+    },
+    
+    // Wire type
+    setWireType(type) {
+        this.wireType = type;
+        let name = 'Soldering';
+        if(type === 'arduino_male_male') name = 'Arduino Male-Male';
+        if(type === 'arduino_male_female') name = 'Arduino Male-Female';
+        if(type === 'arduino_female_female') name = 'Arduino Female-Female';
+        if(type === 'alligator') name = 'Alligator Clip';
+        this.updateStatus(`Wire type: ${name}`);
+    },
+    
+    // Zoom functions
+    setZoom(action) {
+        const container = document.getElementById('circuitContainer');
+        
+        if(action === 'in') {
+            this.zoom = Math.min(this.zoom + 0.25, 3);
+        } else if(action === 'out') {
+            this.zoom = Math.max(this.zoom - 0.25, 0.25);
+        } else if(action === '100') {
+            this.zoom = 1;
+        } else if(action === 'full') {
+            this.fullScreen = !this.fullScreen;
+            if(this.fullScreen) {
+                document.querySelector('.left-panel').style.display = 'none';
+                document.querySelector('.container').style.gridTemplateColumns = '1fr';
+            } else {
+                document.querySelector('.left-panel').style.display = 'flex';
+                document.querySelector('.container').style.gridTemplateColumns = '230px 1fr';
+            }
+        } else if(action === 'normal') {
+            this.fullScreen = false;
+            document.querySelector('.left-panel').style.display = 'flex';
+            document.querySelector('.container').style.gridTemplateColumns = '230px 1fr';
+            this.zoom = 1;
+        }
+        
+        container.style.transform = `scale(${this.zoom})`;
+        this.updateZoomDisplay();
+        this.updateRulers();
+        this.updateGrid();
+    },
+    
+    setCustomZoom() {
+        const zoomVal = parseInt(document.getElementById('customZoom').value);
+        if(!isNaN(zoomVal) && zoomVal >= 10 && zoomVal <= 500) {
+            this.zoom = zoomVal / 100;
+            document.getElementById('circuitContainer').style.transform = `scale(${this.zoom})`;
+            this.updateZoomDisplay();
+            this.updateRulers();
+            this.updateGrid();
+        }
+    },
+    
+    updateZoomDisplay() {
+        document.getElementById('zoomDisplay').innerText = Math.round(this.zoom * 100) + '%';
+    },
+    
+    // Save/Load
+    saveGame() {
+        document.getElementById('saveModal').style.display = 'block';
+    },
+    
+    confirmSave() {
+        const filename = document.getElementById('saveFilename').value;
+        const location = document.getElementById('saveLocation').value;
+        
+        const state = {
+            components: this.components,
+            wires: this.wires,
+            score: this.score,
+            level: this.level,
+            version: '1.0'
+        };
+        
+        const data = JSON.stringify(state, null, 2);
+        
+        if(location === 'download') {
+            const blob = new Blob([data], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename.endsWith('.sbs') ? filename : filename + '.sbs';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            this.updateStatus(`Saved as ${filename}`);
+        } else {
+            localStorage.setItem('sbs_' + filename, data);
+            this.loadSavedGamesList();
+            this.updateStatus(`Saved to browser storage`);
+        }
+        
+        this.closeModal('saveModal');
+    },
+    
+    loadGame() {
+        this.loadSavedGamesList();
+        document.getElementById('openModal').style.display = 'block';
+    },
+    
+    loadSavedGamesList() {
+        const listDiv = document.getElementById('localFilesList');
+        listDiv.innerHTML = '';
+        
+        for(let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if(key.startsWith('sbs_')) {
+                const div = document.createElement('div');
+                div.style.padding = '5px';
+                div.style.cursor = 'pointer';
+                div.style.borderBottom = '1px solid #333';
+                div.textContent = key.substring(4);
+                div.onclick = () => {
+                    document.querySelectorAll('#localFilesList div').forEach(d => d.style.background = 'none');
+                    div.style.background = '#00aaaa';
+                    window.selectedSave = key;
+                };
+                listDiv.appendChild(div);
+            }
+        }
+    },
+    
+    toggleOpenSource() {
+        const source = document.getElementById('openLocation').value;
+        if(source === 'file') {
+            document.getElementById('localFilesList').style.display = 'none';
+            document.getElementById('fileInput').style.display = 'block';
+        } else {
+            document.getElementById('localFilesList').style.display = 'block';
+            document.getElementById('fileInput').style.display = 'none';
+        }
+    },
+    
+    confirmOpen() {
+        const source = document.getElementById('openLocation').value;
+        
+        if(source === 'local' && window.selectedSave) {
+            const data = localStorage.getItem(window.selectedSave);
+            if(data) {
+                const state = JSON.parse(data);
+                this.loadState(state);
+                this.updateStatus(`Loaded ${window.selectedSave.substring(4)}`);
+            }
+        } else if(source === 'file') {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const state = JSON.parse(e.target.result);
+                    this.loadState(state);
+                    this.updateStatus(`Loaded ${file.name}`);
+                };
+                reader.readAsText(file);
+            }
+        }
+        
+        this.closeModal('openModal');
+    },
+    
+    loadState(state) {
+        this.components = state.components || [];
+        this.wires = state.wires || [];
+        this.score = state.score || 0;
+        this.level = state.level || 1;
+        this.nextId = Math.max(...this.components.map(c => c.id), 0) + 1;
+        document.getElementById('scoreDisplay').innerText = `Score: ${this.score}`;
+        this.renderComponents();
+        this.saveToHistory();
+    },
+    
+    // Flow toggle
+    toggleFlow() {
+        this.flowEnabled = !this.flowEnabled;
+        this.updateStatus(`Electron flow: ${this.flowEnabled ? 'ON' : 'OFF'}`);
+    },
+    
+    // Search mode
+    searchMode() {
+        const term = prompt('Search component:');
+        if(term) {
+            const found = this.components.filter(c => 
+                (c.name && c.name.toLowerCase().includes(term.toLowerCase())) ||
+                (c.partID && c.partID.toLowerCase().includes(term.toLowerCase()))
+            );
+            if(found.length > 0) {
+                this.selectedId = found[0].id;
+                this.renderComponents();
+                this.updateStatus(`Found: ${found[0].name}`);
+            }
+        }
+    },
+    
+    // Test circuit
+    testCircuit() {
+        if(this.wires.length === 0) {
+            this.updateStatus('❌ No connections!');
+            return;
+        }
+        
+        let valid = true;
+        let message = '✅ Circuit OK!';
+        
+        this.wires.forEach(wire => {
+            const fromComp = this.components.find(c => c.id === wire.from.compId);
+            const toComp = this.components.find(c => c.id === wire.to.compId);
+            
+            if(fromComp && (fromComp.category === 'diode' || fromComp.category === 'tube')) {
+                if(wire.from.pin === 'cathode') {
+                    valid = false;
+                    message = '❌ Diode reverse! Anode → Cathode only';
+                }
+            }
+            if(toComp && (toComp.category === 'diode' || toComp.category === 'tube')) {
+                if(wire.to.pin === 'anode' || wire.to.pin === 'plate') {
+                    valid = false;
+                    message = '❌ Diode reverse! Anode → Cathode only';
+                }
+            }
+        });
+        
+        if(valid) {
+            this.score += 10;
+            document.getElementById('scoreDisplay').innerText = `Score: ${this.score}`;
+        }
+        this.updateStatus(message);
+    },
+    
+    // Basic operations
+    deleteSelected() {
+        if(this.selectedId) {
+            this.saveToHistory();
+            this.components = this.components.filter(c => c.id !== this.selectedId);
+            this.wires = this.wires.filter(w => 
+                w.from.compId !== this.selectedId && w.to.compId !== this.selectedId
+            );
+            this.selectedId = null;
+            this.renderComponents();
+            this.updateStatus('Component deleted');
+        }
+    },
+    
+    newGame() {
+        if(confirm('Start new game? Current progress will be lost.')) {
+            this.components = [];
+            this.wires = [];
+            this.score = 0;
+            this.level = 1;
+            this.selectedId = null;
+            this.selectedTerminal = null;
+            this.saveToHistory();
+            document.getElementById('scoreDisplay').innerText = 'Score: 0';
+            this.renderComponents();
+            this.updateStatus('New game started');
+        }
+    },
+    
+    handleBackgroundClick() {
+        this.selectedId = null;
+        this.selectedTerminal = null;
+        this.renderComponents();
+    },
+    
+    exportPNG() {
+        this.updateStatus('PNG export - saving circuit...');
+        const canvas = document.getElementById('circuitCanvas');
+        const dataUrl = canvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = dataUrl;
+        a.download = 'circuit.png';
+        a.click();
+    },
+    
+    exportPDF() {
+        alert('PDF export will be available in next version');
+    },
+    
+    openBook() {
+        window.open('TheBasicofElectronics.pdf', '_blank');
+    },
+    
+    showHelp() {
+        alert(
+            '🏫 SchoolBetSim v1.0\n' +
+            'Electronics Lab Simulator\n\n' +
+            '📋 KEYBOARD:\n' +
+            'F1: Help\n' +
+            'F2: Save Game\n' +
+            'F3: Open Game\n' +
+            'F5: Copy Selected\n' +
+            'F8: Delete Selected\n' +
+            'F9: Test Circuit\n' +
+            'R: Rotate Selected\n' +
+            '+/-: Zoom In/Out\n' +
+            'Ctrl+Z: Undo\n' +
+            'Ctrl+Y: Redo\n' +
+            'Ctrl+C: Copy\n' +
+            'Ctrl+A: Select All\n' +
+            'Del: Delete\n\n' +
+            '🎮 HOW TO USE:\n' +
+            '• Click folders in left panel\n' +
+            '• Click components to add\n' +
+            '• Drag to move\n' +
+            '• Click yellow terminals to connect wires\n' +
+            '• Use Options menu for properties\n' +
+            '• Color menu changes wire/component color\n' +
+            '• View menu toggles Design/Schematic views\n' +
+            '• View menu toggles grid and rulers\n\n' +
+            'Created by George Usanetashvili\n' +
+            'CaucasFactory - Georgia 🇬🇪'
+        );
+    },
+    
+    showAbout() {
+        alert(
+            `🏫 SchoolBetSim v1.0\n\n` +
+            `Author: George Usanetashvili\n` +
+            `Ex Military Inventor\n` +
+            `Civilian Engineering Inventor\n` +
+            `Company: CaucasFactory\n` +
+            `Location: Georgia\n\n` +
+            `Special Thanks: DeepSeek AI\n\n` +
+            `https://caucasfactory.github.io/\n\n` +
+            `"Teaching electronics through simulation"`
+        );
+    },
+    
+    closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    },
+    
+    updateStatus(msg) {
+        document.getElementById('status').innerText = msg;
+    },
+    
+    animate() {
+        this.drawWires();
+        requestAnimationFrame(() => this.animate());
+    }
+};
+
+// Start game
+window.onload = () => game.init();
+</script>
+
+</body>
+</html>

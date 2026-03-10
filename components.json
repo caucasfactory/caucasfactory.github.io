@@ -3,7 +3,7 @@
   "author": "George Usanetashvili",
   "assistant": "DeepSeek AI",
   "company": "CaucasFactory",
-  "date": "2026-02-22",
+  "date": "2026-03-10",
   
   "components": {
     "speaker": {
@@ -15,77 +15,176 @@
           "pins": 2,
           "pinNames": ["positive", "negative"],
           "type": "output",
-          "colors": ["#8B4513", "#654321"],
-          "designView": "<circle cx='30' cy='30' r='25' fill='#8B4513' stroke='#fff'/><circle cx='30' cy='30' r='15' fill='#654321'/><circle cx='30' cy='30' r='5' fill='#000'/>",
+          "designView": "<circle cx='30' cy='30' r='25' fill='#8B4513' stroke='#fff' stroke-width='2'/><circle cx='30' cy='30' r='15' fill='#654321'/><circle cx='30' cy='30' r='5' fill='#000'/>",
           "schematicView": "<circle cx='30' cy='30' r='20' fill='none' stroke='#ffff00' stroke-width='2'/><rect x='20' y='20' width='20' height='20' fill='none' stroke='#ffff00'/><path d='M20 40 L30 50 L40 40' stroke='#ffff00' fill='none' stroke-width='2'/>"
         },
-        "piezo": {
-          "name": "Piezo Buzzer",
+        "with_box": {
+          "name": "Speaker with Box",
           "pins": 2,
           "pinNames": ["positive", "negative"],
           "type": "output",
-          "colors": ["#FFD700", "#C0C0C0"],
-          "designView": "<circle cx='30' cy='30' r='20' fill='#FFD700' stroke='#fff'/><path d='M20 20 L40 40 M40 20 L20 40' stroke='#000' stroke-width='2'/>",
-          "schematicView": "<circle cx='30' cy='30' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><text x='23' y='35' fill='#ffff00' font-size='12'>P</text>"
+          "designView": "<rect x='10' y='5' width='40' height='50' fill='#8B4513' stroke='#fff'/><circle cx='30' cy='30' r='15' fill='#654321'/><circle cx='30' cy='30' r='5' fill='#000'/>",
+          "schematicView": "<rect x='15' y='10' width='30' height='40' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='30' cy='30' r='8' fill='none' stroke='#ffff00'/>"
+        },
+        "bell": {
+          "name": "Bell Speaker",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "output",
+          "designView": "<path d='M30 5 L30 15' stroke='#fff' stroke-width='3'/><ellipse cx='30' cy='30' rx='20' ry='25' fill='#c0c0c0' stroke='#fff'/><circle cx='30' cy='35' r='5' fill='#333'/>",
+          "schematicView": "<path d='M30 10 L30 20 M15 30 L45 30 M20 40 L40 40' stroke='#ffff00' stroke-width='2'/><circle cx='30' cy='30' r='15' fill='none' stroke='#ffff00'/>"
+        },
+        "outdoor": {
+          "name": "Outdoor Speaker",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "output",
+          "designView": "<rect x='15' y='10' width='30' height='40' rx='5' fill='#555' stroke='#fff'/><circle cx='30' cy='30' r='10' fill='#333'/>",
+          "schematicView": "<rect x='20' y='15' width='20' height='30' rx='3' fill='none' stroke='#ffff00'/><circle cx='30' cy='30' r='5' fill='none' stroke='#ffff00'/>"
+        },
+        "headphone_with_mic": {
+          "name": "Headphone with Mic",
+          "pins": 3,
+          "pinNames": ["left", "right", "mic"],
+          "type": "io",
+          "designView": "<circle cx='20' cy='25' r='10' fill='#333'/><circle cx='40' cy='25' r='10' fill='#333'/><path d='M20 35 L30 45 L40 35' stroke='#fff' fill='none'/><line x1='30' y1='45' x2='30' y2='55' stroke='#fff'/>",
+          "schematicView": "<circle cx='20' cy='25' r='6' fill='none' stroke='#ffff00'/><circle cx='40' cy='25' r='6' fill='none' stroke='#ffff00'/><path d='M25 35 L30 40 L35 35' stroke='#ffff00' fill='none'/>"
         }
       }
     },
     
-    "tube": {
-      "name": "Vacuum Tube",
-      "icon": "🔮",
+    "battery": {
+      "name": "Battery",
+      "icon": "🔋",
       "items": {
-        "triode": {
-          "name": "Triode",
-          "pins": 3,
-          "pinNames": ["plate", "grid", "cathode"],
-          "type": "amplifier",
-          "colors": ["#d4d4d4", "#8B4513"],
-          "designView": "<ellipse cx='25' cy='35' rx='15' ry='25' fill='#d4d4d4' stroke='#fff'/><rect x='15' y='55' width='20' height='10' fill='#8B4513'/><line x1='20' y1='20' x2='30' y2='30' stroke='#ffaa00' stroke-width='2'/><line x1='20' y1='30' x2='30' y2='40' stroke='#ffaa00' stroke-width='2'/>",
-          "schematicView": "<circle cx='25' cy='30' r='20' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='10' x2='25' y2='20' stroke='#ffff00'/><line x1='25' y1='40' x2='25' y2='50' stroke='#ffff00'/><line x1='10' y1='25' x2='20' y2='25' stroke='#ffff00'/><line x1='40' y1='25' x2='30' y2='25' stroke='#ffff00'/>"
-        },
-        "diode": {
-          "name": "Diode Tube",
+        "1_5v": {
+          "name": "1.5V AA Battery",
           "pins": 2,
-          "pinNames": ["plate", "cathode"],
-          "type": "rectifier",
-          "colors": ["#d4d4d4", "#8B4513"],
-          "designView": "<ellipse cx='25' cy='35' rx='12' ry='20' fill='#d4d4d4' stroke='#fff'/><rect x='15' y='50' width='20' height='10' fill='#8B4513'/><path d='M20 25 L30 35 L20 45' fill='none' stroke='#ffaa00' stroke-width='2'/>",
-          "schematicView": "<circle cx='25' cy='30' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M15 25 L25 35 L15 45' fill='none' stroke='#ffff00' stroke-width='2'/>"
+          "pinNames": ["positive", "negative"],
+          "type": "source",
+          "voltage": 1.5,
+          "designView": "<rect x='15' y='5' width='20' height='50' rx='5' fill='#FF9900' stroke='#fff'/><text x='18' y='30' fill='#000' font-size='8'>1.5V</text>",
+          "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><line x1='20' y1='20' x2='20' y2='40' stroke='#ffff00'/><line x1='40' y1='20' x2='40' y2='40' stroke='#ffff00'/><text x='22' y='35' fill='#ffff00' font-size='6'>1.5V</text>"
+        },
+        "9v": {
+          "name": "9V Battery",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "source",
+          "voltage": 9,
+          "designView": "<rect x='10' y='5' width='30' height='50' fill='#666' stroke='#fff'/><line x1='25' y1='5' x2='25' y2='55' stroke='#fff' stroke-dasharray='2,2'/><text x='15' y='30' fill='#fff' font-size='8'>9V</text>",
+          "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='20' x2='30' y2='40' stroke='#ffff00'/><text x='20' y='35' fill='#ffff00' font-size='6'>9V</text>"
+        },
+        "car_12v": {
+          "name": "Car Battery 12V 200A",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "source",
+          "voltage": 12,
+          "current": 200,
+          "designView": "<rect x='10' y='5' width='40' height='50' fill='#333' stroke='#fff'/><line x1='15' y1='15' x2='45' y2='15' stroke='#fff'/><text x='18' y='35' fill='#fff' font-size='8'>12V</text>",
+          "schematicView": "<line x1='10' y1='20' x2='50' y2='20' stroke='#ffff00' stroke-width='3'/><line x1='10' y1='40' x2='50' y2='40' stroke='#ffff00' stroke-width='3'/><line x1='20' y1='20' x2='20' y2='40' stroke='#ffff00' stroke-width='2'/><line x1='40' y1='20' x2='40' y2='40' stroke='#ffff00' stroke-width='2'/><text x='25' y='35' fill='#ffff00'>12V</text>"
+        },
+        "1_cell": {
+          "name": "1-Cell Battery",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "source",
+          "designView": "<rect x='15' y='10' width='20' height='40' fill='#FF9900' stroke='#fff'/><line x1='25' y1='10' x2='25' y2='50' stroke='#fff' stroke-dasharray='2,2'/>",
+          "schematicView": "<line x1='20' y1='25' x2='40' y2='25' stroke='#ffff00' stroke-width='2'/><line x1='20' y1='35' x2='40' y2='35' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='25' x2='25' y2='35' stroke='#ffff00'/>"
+        },
+        "2_cell": {
+          "name": "2-Cell Battery",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "source",
+          "designView": "<rect x='10' y='5' width='30' height='50' fill='#FF9900' stroke='#fff'/><line x1='25' y1='5' x2='25' y2='55' stroke='#fff' stroke-width='2'/><line x1='25' y1='20' x2='25' y2='40' stroke='#000' stroke-dasharray='2,2'/>",
+          "schematicView": "<line x1='15' y1='15' x2='45' y2='15' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='30' x2='45' y2='30' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='45' x2='45' y2='45' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='15' x2='25' y2='45' stroke='#ffff00'/><line x1='35' y1='15' x2='35' y2='45' stroke='#ffff00'/>"
+        }
+      }
+    },
+    
+    "transformer": {
+      "name": "Transformer",
+      "icon": "⚡",
+      "items": {
+        "center_tap": {
+          "name": "Center-Tap Transformer",
+          "pins": 3,
+          "pinNames": ["primary", "secondary", "center"],
+          "type": "passive",
+          "designView": "<rect x='15' y='10' width='50' height='30' fill='#0066aa' stroke='#fff'/><path d='M25 15 Q30 10, 35 15 Q40 20, 45 15' stroke='#ffff00' fill='none' stroke-width='2'/><path d='M25 35 Q30 30, 35 35 Q40 40, 45 35' stroke='#ffff00' fill='none' stroke-width='2'/><line x1='45' y1='25' x2='55' y2='25' stroke='#ffff00'/>",
+          "schematicView": "<circle cx='25' cy='20' r='10' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='35' cy='20' r='10' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='25' cy='40' r='10' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='35' cy='40' r='10' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='30' x2='30' y2='40' stroke='#ffff00'/><line x1='30' y1='10' x2='30' y2='20' stroke='#ffff00'/>"
+        },
+        "audio": {
+          "name": "Audio Transformer",
+          "pins": 4,
+          "pinNames": ["pri1", "pri2", "sec1", "sec2"],
+          "type": "passive",
+          "designView": "<rect x='15' y='5' width='50' height='40' fill='#0066aa' stroke='#fff'/><path d='M25 15 Q30 10, 35 15' stroke='#ffff00'/><path d='M25 35 Q30 30, 35 35' stroke='#ffff00'/>",
+          "schematicView": "<ellipse cx='25' cy='20' rx='8' ry='12' fill='none' stroke='#ffff00'/><ellipse cx='35' cy='20' rx='8' ry='12' fill='none' stroke='#ffff00'/><ellipse cx='25' cy='40' rx='8' ry='12' fill='none' stroke='#ffff00'/><ellipse cx='35' cy='40' rx='8' ry='12' fill='none' stroke='#ffff00'/>"
+        },
+        "ferrite_core": {
+          "name": "Ferrite Core Transformer",
+          "pins": 4,
+          "pinNames": ["p1", "p2", "s1", "s2"],
+          "type": "passive",
+          "designView": "<rect x='15' y='10' width='50' height='30' fill='#333' stroke='#fff'/><path d='M25 15 Q30 12, 35 15 Q40 18, 45 15' stroke='#c0c0c0' fill='none'/><path d='M25 35 Q30 32, 35 35 Q40 38, 45 35' stroke='#c0c0c0' fill='none'/>",
+          "schematicView": "<rect x='20' y='15' width='8' height='30' fill='#ffff00'/><rect x='32' y='15' width='8' height='30' fill='#ffff00'/><path d='M15 20 L20 25 L15 30' stroke='#ffff00' fill='none'/><path d='M45 20 L40 25 L45 30' stroke='#ffff00' fill='none'/>"
+        }
+      }
+    },
+    
+    "inductor": {
+      "name": "Inductor",
+      "icon": "⚡",
+      "items": {
+        "air_core": {
+          "name": "Air Core Inductor",
+          "pins": 2,
+          "pinNames": ["a", "b"],
+          "type": "passive",
+          "designView": "<rect x='15' y='10' width='30' height='30' fill='#c0c0c0' stroke='#fff'/><path d='M20 15 Q25 10, 30 15 Q35 20, 40 15' stroke='#FF00FF' fill='none' stroke-width='2'/>",
+          "schematicView": "<path d='M15 25 Q20 15, 25 25 Q30 35, 35 25 Q40 15, 45 25' stroke='#ffff00' fill='none' stroke-width='3'/>"
+        },
+        "iron_core": {
+          "name": "Iron Core Inductor",
+          "pins": 2,
+          "pinNames": ["a", "b"],
+          "type": "passive",
+          "designView": "<rect x='15' y='5' width='30' height='40' fill='#333' stroke='#fff'/><path d='M20 15 Q25 10, 30 15 Q35 20, 40 15' stroke='#fff' fill='none' stroke-width='2'/>",
+          "schematicView": "<path d='M15 25 Q20 15, 25 25 Q30 35, 35 25 Q40 15, 45 25' stroke='#ffff00' fill='none' stroke-width='3'/><line x1='25' y1='15' x2='35' y2='35' stroke='#ffff00'/><line x1='35' y1='15' x2='25' y2='35' stroke='#ffff00'/>"
         }
       }
     },
     
     "diode": {
-      "name": "Semiconductor Diode",
+      "name": "Diode",
       "icon": "⚡",
       "items": {
-        "normal": {
+        "silicon": {
           "name": "Silicon Diode",
           "pins": 2,
           "pinNames": ["anode", "cathode"],
           "type": "rectifier",
-          "colors": ["#666", "#333"],
-          "designView": "<path d='M10 15 L30 5 L30 25 L10 15' fill='#666' stroke='#fff'/><line x1='30' y1='15' x2='45' y2='15' stroke='#fff'/>",
-          "schematicView": "<path d='M15 15 L30 5 L30 25 L15 15' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='15' x2='45' y2='15' stroke='#ffff00'/><line x1='30' y1='10' x2='30' y2='20' stroke='#ffff00'/>"
-        },
-        "zener": {
-          "name": "Zener Diode",
-          "pins": 2,
-          "pinNames": ["anode", "cathode"],
-          "type": "regulator",
-          "colors": ["#666", "#CC9900"],
-          "designView": "<path d='M10 15 L30 5 L30 25 L10 15' fill='#666' stroke='#fff'/><line x1='30' y1='15' x2='45' y2='15' stroke='#fff'/><path d='M30 5 L35 10 M30 25 L35 20' stroke='#fff'/>",
-          "schematicView": "<path d='M15 15 L30 5 L30 25 L15 15' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='15' x2='45' y2='15' stroke='#ffff00'/><line x1='30' y1='5' x2='35' y2='10' stroke='#ffff00'/><line x1='30' y1='25' x2='35' y2='20' stroke='#ffff00'/>"
+          "designView": "<path d='M10 15 L30 5 L30 25 L10 15' fill='#666' stroke='#fff' stroke-width='2'/><line x1='30' y1='15' x2='45' y2='15' stroke='#fff' stroke-width='2'/>",
+          "schematicView": "<path d='M15 15 L30 5 L30 25 L15 15' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='15' x2='45' y2='15' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='10' x2='30' y2='20' stroke='#ffff00' stroke-width='1'/>"
         },
         "led": {
-          "name": "LED",
+          "name": "LED Diode",
           "pins": 2,
           "pinNames": ["anode", "cathode"],
           "type": "output",
-          "colors": ["#FF0000", "#00FF00"],
-          "designView": "<circle cx='30' cy='25' r='15' fill='#FF0000' stroke='#fff'/><path d='M30 5 L30 15 M30 35 L30 45' stroke='#fff'/><path d='M20 20 L40 40 M40 20 L20 40' stroke='#fff'/>",
-          "schematicView": "<path d='M15 15 L30 5 L30 25 L15 15' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='15' x2='45' y2='15' stroke='#ffff00'/><circle cx='45' cy='15' r='5' fill='none' stroke='#ffff00'/>"
+          "designView": "<circle cx='30' cy='25' r='15' fill='#FF0000' stroke='#fff' stroke-width='2'/><path d='M30 5 L30 15 M30 35 L30 45' stroke='#fff' stroke-width='2'/><path d='M20 20 L40 40 M40 20 L20 40' stroke='#fff' stroke-width='2'/>",
+          "schematicView": "<path d='M15 15 L30 5 L30 25 L15 15' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='15' x2='45' y2='15' stroke='#ffff00' stroke-width='2'/><circle cx='45' cy='15' r='5' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='45' y1='10' x2='45' y2='20' stroke='#ffff00'/><line x1='40' y1='15' x2='50' y2='15' stroke='#ffff00'/>"
+        },
+        "rgb_led": {
+          "name": "RGB LED",
+          "pins": 4,
+          "pinNames": ["red", "green", "blue", "common"],
+          "type": "output",
+          "designView": "<circle cx='30' cy='25' r='15' fill='#555' stroke='#fff' stroke-width='2'/><circle cx='23' cy='20' r='4' fill='#FF0000'/><circle cx='30' cy='20' r='4' fill='#00FF00'/><circle cx='37' cy='20' r='4' fill='#0000FF'/>",
+          "schematicView": "<circle cx='30' cy='25' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><text x='25' y='30' fill='#ffff00' font-size='8'>RGB</text>"
         }
       }
     },
@@ -99,122 +198,63 @@
           "pins": 3,
           "pinNames": ["collector", "base", "emitter"],
           "type": "amplifier",
-          "colors": ["#444", "#666"],
-          "designView": "<circle cx='30' cy='15' r='8' fill='#444' stroke='#fff'/><path d='M30 23 L30 45' stroke='#fff'/><line x1='15' y1='45' x2='45' y2='45' stroke='#fff'/><path d='M25 30 L35 30' stroke='#fff'/>",
-          "schematicView": "<circle cx='30' cy='20' r='12' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M30 8 L30 12 M30 28 L30 45 M18 32 L42 32' stroke='#ffff00'/><path d='M30 32 L25 37 L35 37 Z' fill='none' stroke='#ffff00'/>"
+          "designView": "<circle cx='30' cy='15' r='8' fill='#444' stroke='#fff' stroke-width='2'/><path d='M30 23 L30 45' stroke='#fff' stroke-width='2'/><line x1='15' y1='45' x2='45' y2='45' stroke='#fff' stroke-width='2'/><path d='M25 30 L35 30' stroke='#fff' stroke-width='2'/>",
+          "schematicView": "<circle cx='30' cy='20' r='12' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M30 8 L30 12 M30 28 L30 45 M18 32 L42 32' stroke='#ffff00' stroke-width='2'/><path d='M30 32 L25 37 L35 37 Z' fill='none' stroke='#ffff00' stroke-width='2'/>"
         },
         "pnp": {
           "name": "PNP Transistor",
           "pins": 3,
           "pinNames": ["emitter", "base", "collector"],
           "type": "amplifier",
-          "colors": ["#444", "#996633"],
-          "designView": "<circle cx='30' cy='15' r='8' fill='#444' stroke='#fff'/><path d='M30 23 L30 45' stroke='#fff'/><line x1='15' y1='45' x2='45' y2='45' stroke='#fff'/><path d='M30 30 L25 35 L35 35 Z' fill='#996633'/>",
-          "schematicView": "<circle cx='30' cy='20' r='12' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M30 8 L30 12 M30 28 L30 45 M18 32 L42 32' stroke='#ffff00'/><path d='M30 37 L25 32 L35 32 Z' fill='none' stroke='#ffff00'/>"
-        }
-      }
-    },
-    
-    "transformer": {
-      "name": "Transformer",
-      "icon": "⚡",
-      "items": {
-        "default": {
-          "name": "Center-Tap Transformer",
+          "designView": "<circle cx='30' cy='15' r='8' fill='#444' stroke='#fff' stroke-width='2'/><path d='M30 23 L30 45' stroke='#fff' stroke-width='2'/><line x1='15' y1='45' x2='45' y2='45' stroke='#fff' stroke-width='2'/><path d='M30 30 L25 35 L35 35 Z' fill='#996633' stroke='#fff'/>",
+          "schematicView": "<circle cx='30' cy='20' r='12' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M30 8 L30 12 M30 28 L30 45 M18 32 L42 32' stroke='#ffff00' stroke-width='2'/><path d='M30 37 L25 32 L35 32 Z' fill='none' stroke='#ffff00' stroke-width='2'/>"
+        },
+        "big": {
+          "name": "Big Power Transistor",
           "pins": 3,
-          "pinNames": ["primary", "secondary", "center"],
-          "type": "passive",
-          "colors": ["#0066aa", "#c0c0c0"],
-          "designView": "<rect x='15' y='10' width='50' height='30' fill='#0066aa' stroke='#fff'/><path d='M25 15 Q30 10, 35 15 Q40 20, 45 15' stroke='#ffff00' fill='none' stroke-width='2'/><path d='M25 35 Q30 30, 35 35 Q40 40, 45 35' stroke='#ffff00' fill='none' stroke-width='2'/>",
-          "schematicView": "<circle cx='30' cy='20' r='8' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='30' cy='40' r='8' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='22' y1='12' x2='38' y2='12' stroke='#ffff00'/><line x1='22' y1='28' x2='38' y2='28' stroke='#ffff00'/>"
+          "pinNames": ["collector", "base", "emitter"],
+          "type": "amplifier",
+          "designView": "<rect x='20' y='5' width='20' height='40' fill='#333' stroke='#fff'/><circle cx='30' cy='50' r='10' fill='#333' stroke='#fff'/>",
+          "schematicView": "<circle cx='30' cy='25' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M30 10 L30 40 M15 30 L45 30' stroke='#ffff00' stroke-width='2'/>"
         },
-        "audio": {
-          "name": "Audio Transformer",
-          "pins": 4,
-          "pinNames": ["pri1", "pri2", "sec1", "sec2"],
-          "type": "passive",
-          "colors": ["#0066aa", "#c0c0c0"],
-          "designView": "<rect x='15' y='5' width='50' height='40' fill='#0066aa' stroke='#fff'/><path d='M25 15 Q30 10, 35 15' stroke='#ffff00'/><path d='M25 35 Q30 30, 35 35' stroke='#ffff00'/>",
-          "schematicView": "<circle cx='25' cy='20' r='6' fill='none' stroke='#ffff00'/><circle cx='35' cy='20' r='6' fill='none' stroke='#ffff00'/><circle cx='25' cy='40' r='6' fill='none' stroke='#ffff00'/><circle cx='35' cy='40' r='6' fill='none' stroke='#ffff00'/>"
+        "small": {
+          "name": "Small Signal Transistor",
+          "pins": 3,
+          "pinNames": ["collector", "base", "emitter"],
+          "type": "amplifier",
+          "designView": "<circle cx='30' cy='20' r='6' fill='#222' stroke='#fff'/><line x1='30' y1='26' x2='30' y2='45' stroke='#fff'/><line x1='20' y1='45' x2='40' y2='45' stroke='#fff'/>",
+          "schematicView": "<circle cx='30' cy='20' r='8' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M30 12 L30 28 M22 25 L38 25' stroke='#ffff00'/>"
         }
       }
     },
     
-    "microphone": {
-      "name": "Microphone",
-      "icon": "🎤",
+    "tube": {
+      "name": "Vacuum Tube",
+      "icon": "🔮",
       "items": {
-        "dynamic": {
-          "name": "Dynamic Mic",
-          "pins": 2,
-          "pinNames": ["signal", "ground"],
-          "type": "input",
-          "colors": ["#333", "#666"],
-          "designView": "<circle cx='30' cy='25' r='15' fill='#333' stroke='#fff'/><path d='M30 40 L30 55 M20 55 L40 55' stroke='#fff' stroke-width='2'/>",
-          "schematicView": "<circle cx='30' cy='30' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M25 20 L35 30 L25 40' fill='none' stroke='#ffff00'/>"
+        "triode": {
+          "name": "Triode Tube",
+          "pins": 3,
+          "pinNames": ["plate", "grid", "cathode"],
+          "type": "amplifier",
+          "designView": "<ellipse cx='25' cy='35' rx='15' ry='25' fill='#d4d4d4' stroke='#fff' stroke-width='2'/><rect x='15' y='55' width='20' height='10' fill='#8B4513'/><line x1='20' y1='20' x2='30' y2='30' stroke='#ffaa00' stroke-width='2'/><line x1='20' y1='30' x2='30' y2='40' stroke='#ffaa00' stroke-width='2'/>",
+          "schematicView": "<circle cx='25' cy='30' r='20' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='10' x2='25' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='40' x2='25' y2='50' stroke='#ffff00' stroke-width='2'/><line x1='10' y1='25' x2='20' y2='25' stroke='#ffff00' stroke-width='2'/><line x1='40' y1='25' x2='30' y2='25' stroke='#ffff00' stroke-width='2'/>"
         },
-        "condenser": {
-          "name": "Condenser Mic",
+        "diode": {
+          "name": "Diode Tube",
           "pins": 2,
-          "pinNames": ["positive", "negative"],
-          "type": "input",
-          "colors": ["#666", "#999"],
-          "designView": "<circle cx='30' cy='25' r='12' fill='#666' stroke='#fff'/><circle cx='30' cy='25' r='5' fill='#999'/><path d='M30 37 L30 55' stroke='#fff'/>",
-          "schematicView": "<circle cx='30' cy='30' r='12' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='30' cy='30' r='5' fill='none' stroke='#ffff00'/>"
-        }
-      }
-    },
-    
-    "battery": {
-      "name": "Battery",
-      "icon": "🔋",
-      "items": {
-        "9v": {
-          "name": "9V Battery",
-          "pins": 2,
-          "pinNames": ["positive", "negative"],
-          "type": "source",
-          "voltage": 9,
-          "colors": ["#666", "#333"],
-          "designView": "<rect x='10' y='5' width='30' height='50' fill='#666' stroke='#fff'/><line x1='25' y1='5' x2='25' y2='55' stroke='#fff' stroke-dasharray='2,2'/><text x='15' y='30' fill='#fff' font-size='8'>9V</text>",
-          "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><line x1='30' y1='20' x2='30' y2='40' stroke='#ffff00'/><text x='20' y='35' fill='#ffff00' font-size='8'>9V</text>"
+          "pinNames": ["plate", "cathode"],
+          "type": "rectifier",
+          "designView": "<ellipse cx='25' cy='35' rx='12' ry='20' fill='#d4d4d4' stroke='#fff' stroke-width='2'/><rect x='15' y='50' width='20' height='10' fill='#8B4513'/><path d='M20 25 L30 35 L20 45' fill='none' stroke='#ffaa00' stroke-width='2'/>",
+          "schematicView": "<circle cx='25' cy='30' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M15 25 L25 35 L15 45' fill='none' stroke='#ffff00' stroke-width='2'/>"
         },
-        "aa": {
-          "name": "AA Battery",
-          "pins": 2,
-          "pinNames": ["positive", "negative"],
-          "type": "source",
-          "voltage": 1.5,
-          "colors": ["#FF9900", "#333"],
-          "designView": "<rect x='15' y='5' width='20' height='50' rx='5' fill='#FF9900' stroke='#fff'/><text x='18' y='30' fill='#000' font-size='8'>1.5V</text>",
-          "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><line x1='20' y1='20' x2='20' y2='40' stroke='#ffff00'/><line x1='40' y1='20' x2='40' y2='40' stroke='#ffff00'/>"
-        }
-      }
-    },
-    
-    "resistor": {
-      "name": "Resistor",
-      "icon": "📊",
-      "items": {
-        "100r": {
-          "name": "100Ω Resistor",
-          "pins": 2,
-          "pinNames": ["a", "b"],
-          "type": "passive",
-          "resistance": 100,
-          "colors": ["#c0c0c0", "#8B4513"],
-          "designView": "<rect x='5' y='10' width='50' height='15' fill='#c0c0c0' stroke='#fff'/><path d='M10 17 L20 10 L30 17 L40 10 L50 17' stroke='#8B4513' fill='none' stroke-width='2'/>",
-          "schematicView": "<path d='M10 18 L20 12 L30 18 L40 12 L50 18' stroke='#ffff00' fill='none' stroke-width='3'/>"
-        },
-        "1k": {
-          "name": "1kΩ Resistor",
-          "pins": 2,
-          "pinNames": ["a", "b"],
-          "type": "passive",
-          "resistance": 1000,
-          "colors": ["#c0c0c0", "#FF0000"],
-          "designView": "<rect x='5' y='10' width='50' height='15' fill='#c0c0c0' stroke='#fff'/><path d='M10 17 L20 10 L30 17 L40 10 L50 17' stroke='#FF0000' fill='none' stroke-width='2'/>",
-          "schematicView": "<path d='M10 18 L20 12 L30 18 L40 12 L50 18' stroke='#ffff00' fill='none' stroke-width='3'/><text x='25' y='30' fill='#ffff00' font-size='6'>1k</text>"
+        "pentode": {
+          "name": "Pentode Tube",
+          "pins": 5,
+          "pinNames": ["plate", "screen", "grid", "cathode", "suppressor"],
+          "type": "amplifier",
+          "designView": "<ellipse cx='25' cy='35' rx='18' ry='28' fill='#d4d4d4' stroke='#fff' stroke-width='2'/><rect x='15' y='58' width='20' height='10' fill='#8B4513'/><line x1='18' y1='18' x2='32' y2='28' stroke='#ffaa00'/><line x1='18' y1='28' x2='32' y2='38' stroke='#ffaa00'/><line x1='18' y1='38' x2='32' y2='48' stroke='#ffaa00'/>",
+          "schematicView": "<circle cx='25' cy='30' r='22' fill='none' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='8' x2='25' y2='18' stroke='#ffff00'/><line x1='25' y1='42' x2='25' y2='52' stroke='#ffff00'/><line x1='8' y1='20' x2='18' y2='25' stroke='#ffff00'/><line x1='8' y1='30' x2='18' y2='30' stroke='#ffff00'/><line x1='8' y1='40' x2='18' y2='35' stroke='#ffff00'/>"
         }
       }
     },
@@ -228,47 +268,70 @@
           "pins": 2,
           "pinNames": ["a", "b"],
           "type": "passive",
-          "capacitance": 0.1,
-          "colors": ["#c0c0c0", "#FF9900"],
-          "designView": "<rect x='15' y='5' width='30' height='40' rx='5' fill='#FF9900' stroke='#fff'/><text x='20' y='25' fill='#000' font-size='8'>0.1µ</text>",
+          "designView": "<rect x='15' y='5' width='30' height='40' rx='5' fill='#FF9900' stroke='#fff' stroke-width='2'/><text x='20' y='25' fill='#000' font-size='8'>0.1µ</text>",
           "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><text x='20' y='35' fill='#ffff00' font-size='6'>0.1µ</text>"
         },
-        "electrolytic": {
-          "name": "Electrolytic Capacitor",
+        "polarized": {
+          "name": "Polarized Capacitor",
           "pins": 2,
           "pinNames": ["positive", "negative"],
           "type": "passive",
-          "capacitance": 100,
-          "colors": ["#00aa00", "#333"],
-          "designView": "<rect x='15' y='5' width='30' height='40' fill='#00aa00' stroke='#fff'/><line x1='20' y1='5' x2='40' y2='5' stroke='#fff'/><text x='20' y='25' fill='#fff' font-size='8'>100µ</text>",
-          "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><text x='20' y='35' fill='#ffff00' font-size='6'>100µ</text><line x1='40' y1='20' x2='40' y2='40' stroke='#ffff00'/>"
+          "designView": "<rect x='15' y='5' width='30' height='40' fill='#00aa00' stroke='#fff' stroke-width='2'/><line x1='20' y1='5' x2='40' y2='5' stroke='#fff' stroke-width='2'/><text x='20' y='25' fill='#fff' font-size='8'>100µ</text>",
+          "schematicView": "<line x1='15' y1='20' x2='45' y2='20' stroke='#ffff00' stroke-width='2'/><line x1='15' y1='40' x2='45' y2='40' stroke='#ffff00' stroke-width='2'/><text x='20' y='35' fill='#ffff00' font-size='6'>100µ</text><line x1='40' y1='20' x2='40' y2='40' stroke='#ffff00' stroke-width='2'/>"
         }
       }
     },
     
-    "inductor": {
-      "name": "Inductor",
-      "icon": "⚡",
+    "resistor": {
+      "name": "Resistor",
+      "icon": "📊",
       "items": {
-        "air": {
-          "name": "Air Core Inductor",
+        "fixed": {
+          "name": "Fixed Resistor",
           "pins": 2,
           "pinNames": ["a", "b"],
           "type": "passive",
-          "inductance": 10,
-          "colors": ["#c0c0c0", "#FF00FF"],
-          "designView": "<rect x='15' y='10' width='30' height='30' fill='#c0c0c0' stroke='#fff'/><path d='M20 15 Q25 10, 30 15 Q35 20, 40 15' stroke='#FF00FF' fill='none'/>",
-          "schematicView": "<path d='M15 25 Q20 15, 25 25 Q30 35, 35 25 Q40 15, 45 25' stroke='#ffff00' fill='none' stroke-width='3'/>"
+          "designView": "<rect x='5' y='10' width='50' height='15' fill='#c0c0c0' stroke='#fff' stroke-width='2'/><path d='M10 17 L20 10 L30 17 L40 10 L50 17' stroke='#8B4513' fill='none' stroke-width='2'/>",
+          "schematicView": "<path d='M10 18 L20 12 L30 18 L40 12 L50 18' stroke='#ffff00' fill='none' stroke-width='3'/>"
         },
-        "iron": {
-          "name": "Iron Core Inductor",
+        "variable": {
+          "name": "Variable Resistor",
+          "pins": 3,
+          "pinNames": ["a", "wiper", "b"],
+          "type": "passive",
+          "designView": "<rect x='5' y='10' width='50' height='15' fill='#c0c0c0' stroke='#fff'/><path d='M30 5 L30 30' stroke='#fff'/><path d='M10 17 L20 10 L30 17 L40 10 L50 17' stroke='#333' fill='none'/>",
+          "schematicView": "<path d='M10 20 L20 14 L30 20 L40 14 L50 20' stroke='#ffff00' fill='none' stroke-width='3'/><path d='M30 20 L30 35' stroke='#ffff00' stroke-width='2'/><line x1='25' y1='30' x2='35' y2='30' stroke='#ffff00'/>"
+        },
+        "photo": {
+          "name": "Photo Resistor (LDR)",
           "pins": 2,
           "pinNames": ["a", "b"],
-          "type": "passive",
-          "inductance": 100,
-          "colors": ["#c0c0c0", "#333"],
-          "designView": "<rect x='15' y='5' width='30' height='40' fill='#333' stroke='#fff'/><path d='M20 15 Q25 10, 30 15 Q35 20, 40 15' stroke='#fff'/>",
-          "schematicView": "<path d='M15 25 Q20 15, 25 25 Q30 35, 35 25 Q40 15, 45 25' stroke='#ffff00' fill='none' stroke-width='3'/><line x1='25' y1='15' x2='35' y2='35' stroke='#ffff00'/><line x1='35' y1='15' x2='25' y2='35' stroke='#ffff00'/>"
+          "type": "sensor",
+          "designView": "<rect x='15' y='10' width='30' height='30' fill='#333' stroke='#fff'/><circle cx='30' cy='25' r='8' fill='#666'/><path d='M25 18 L35 28 M35 18 L25 28' stroke='#fff'/>",
+          "schematicView": "<rect x='15' y='15' width='30' height='20' fill='none' stroke='#ffff00'/><path d='M20 20 L40 30 M40 20 L20 30' stroke='#ffff00'/><line x1='10' y1='25' x2='15' y2='25' stroke='#ffff00'/><line x1='50' y1='25' x2='45' y2='25' stroke='#ffff00'/>"
+        }
+      }
+    },
+    
+    "microphone": {
+      "name": "Microphone",
+      "icon": "🎤",
+      "items": {
+        "dynamic": {
+          "name": "Dynamic Mic",
+          "pins": 2,
+          "pinNames": ["signal", "ground"],
+          "type": "input",
+          "designView": "<circle cx='30' cy='25' r='15' fill='#333' stroke='#fff' stroke-width='2'/><path d='M30 40 L30 55 M20 55 L40 55' stroke='#fff' stroke-width='2'/>",
+          "schematicView": "<circle cx='30' cy='30' r='15' fill='none' stroke='#ffff00' stroke-width='2'/><path d='M25 20 L35 30 L25 40' fill='none' stroke='#ffff00' stroke-width='2'/>"
+        },
+        "condenser": {
+          "name": "Condenser Mic",
+          "pins": 2,
+          "pinNames": ["positive", "negative"],
+          "type": "input",
+          "designView": "<circle cx='30' cy='25' r='12' fill='#666' stroke='#fff' stroke-width='2'/><circle cx='30' cy='25' r='5' fill='#999'/><path d='M30 37 L30 55' stroke='#fff' stroke-width='2'/>",
+          "schematicView": "<circle cx='30' cy='30' r='12' fill='none' stroke='#ffff00' stroke-width='2'/><circle cx='30' cy='30' r='5' fill='none' stroke='#ffff00' stroke-width='2'/>"
         }
       }
     },
@@ -277,71 +340,36 @@
       "name": "Switch",
       "icon": "⚡",
       "items": {
-        "spst": {
-          "name": "SPST Switch",
+        "linear": {
+          "name": "Linear Switch",
           "pins": 2,
           "pinNames": ["in", "out"],
           "type": "passive",
-          "colors": ["#666", "#333"],
-          "designView": "<rect x='15' y='15' width='30' height='20' fill='#666' stroke='#fff'/><circle cx='20' cy='25' r='5' fill='#333'/><circle cx='40' cy='25' r='5' fill='#333'/>",
+          "designView": "<rect x='15' y='15' width='30' height='20' fill='#666' stroke='#fff'/><circle cx='20' cy='25' r='5' fill='#333'/><circle cx='40' cy='25' r='5' fill='#333'/><line x1='20' y1='25' x2='40' y2='25' stroke='#0f0' stroke-width='2'/>",
           "schematicView": "<line x1='15' y1='25' x2='30' y2='25' stroke='#ffff00' stroke-width='2'/><circle cx='30' cy='25' r='3' fill='none' stroke='#ffff00'/><line x1='30' y1='25' x2='45' y2='25' stroke='#ffff00' stroke-dasharray='2,2'/>"
-        }
-      }
-    },
-    
-    "fuse": {
-      "name": "Fuse",
-      "icon": "⚡",
-      "items": {
-        "default": {
-          "name": "Fuse",
-          "pins": 2,
-          "pinNames": ["a", "b"],
+        },
+        "dpdt": {
+          "name": "DPDT Switch",
+          "pins": 6,
+          "pinNames": ["1a", "1b", "2a", "2b", "3a", "3b"],
           "type": "passive",
-          "colors": ["#FF0000", "#333"],
-          "designView": "<rect x='15' y='15' width='30' height='10' fill='#FF0000' stroke='#fff'/><text x='20' y='25' fill='#fff' font-size='8'>F</text>",
-          "schematicView": "<rect x='20' y='20' width='20' height='10' fill='none' stroke='#ffff00' stroke-width='2'/><text x='25' y='30' fill='#ffff00' font-size='8'>F</text>"
+          "designView": "<rect x='10' y='5' width='40' height='40' fill='#666' stroke='#fff'/><circle cx='15' cy='15' r='4' fill='#333'/><circle cx='45' cy='15' r='4' fill='#333'/><circle cx='15' cy='35' r='4' fill='#333'/><circle cx='45' cy='35' r='4' fill='#333'/>",
+          "schematicView": "<line x1='15' y1='15' x2='35' y2='15' stroke='#ffff00'/><line x1='15' y1='35' x2='35' y2='35' stroke='#ffff00'/><line x1='45' y1='15' x2='35' y2='15' stroke='#ffff00' stroke-dasharray='2,2'/><line x1='45' y1='35' x2='35' y2='35' stroke='#ffff00' stroke-dasharray='2,2'/>"
         }
       }
     },
     
-    "ic": {
+    "integrated_circuit": {
       "name": "Integrated Circuit",
       "icon": "🔲",
       "items": {
-        "555": {
-          "name": "555 Timer IC",
+        "generic": {
+          "name": "IC",
           "pins": 8,
-          "pinNames": ["gnd", "trig", "out", "reset", "ctrl", "thresh", "disch", "vcc"],
+          "pinNames": ["1", "2", "3", "4", "5", "6", "7", "8"],
           "type": "ic",
-          "colors": ["#222", "#666"],
-          "designView": "<rect x='10' y='5' width='40' height='60' fill='#222' stroke='#fff'/><text x='15' y='35' fill='#fff' font-size='8'>555</text>",
-          "schematicView": "<rect x='15' y='10' width='30' height='40' fill='none' stroke='#ffff00' stroke-width='2'/><text x='20' y='30' fill='#ffff00' font-size='8'>555</text>"
-        },
-        "741": {
-          "name": "741 Op-Amp",
-          "pins": 8,
-          "pinNames": ["offset1", "in-", "in+", "v-", "offset2", "out", "v+", "nc"],
-          "type": "ic",
-          "colors": ["#222", "#666"],
-          "designView": "<rect x='10' y='5' width='40' height='60' fill='#222' stroke='#fff'/><text x='15' y='35' fill='#fff' font-size='8'>741</text>",
-          "schematicView": "<rect x='15' y='10' width='30' height='40' fill='none' stroke='#ffff00' stroke-width='2'/><text x='20' y='30' fill='#ffff00' font-size='8'>741</text>"
-        }
-      }
-    },
-    
-    "connector": {
-      "name": "Connector",
-      "icon": "🔌",
-      "items": {
-        "terminal": {
-          "name": "Terminal Block",
-          "pins": 2,
-          "pinNames": ["1", "2"],
-          "type": "passive",
-          "colors": ["#c0c0c0", "#666"],
-          "designView": "<rect x='10' y='10' width='40' height='30' fill='#c0c0c0' stroke='#fff'/><circle cx='20' cy='25' r='4' fill='#666'/><circle cx='40' cy='25' r='4' fill='#666'/>",
-          "schematicView": "<circle cx='25' cy='20' r='6' fill='none' stroke='#ffff00'/><circle cx='35' cy='20' r='6' fill='none' stroke='#ffff00'/><line x1='25' y1='20' x2='35' y2='20' stroke='#ffff00'/>"
+          "designView": "<rect x='10' y='5' width='40' height='60' fill='#222' stroke='#fff' stroke-width='2'/><text x='15' y='35' fill='#fff' font-size='8'>IC</text>",
+          "schematicView": "<rect x='15' y='10' width='30' height='40' fill='none' stroke='#ffff00' stroke-width='2'/><text x='20' y='30' fill='#ffff00' font-size='8'>IC</text>"
         }
       }
     }
@@ -361,7 +389,7 @@
     "company": "CaucasFactory",
     "location": "Georgia",
     "assistant": "DeepSeek AI",
-    "version": "1.0",
-    "name": "SchoolBetSim"
+    "version": "2.0",
+    "name": "SchoolBetSim - Complete Edition"
   }
 }

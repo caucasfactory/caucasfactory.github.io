@@ -32,7 +32,8 @@
       }
     }
   }
-  },
+}
+},
   
   "wires": {
     "soldering": {"name": "Soldering", "color": "#C0C0C0", "width": 2},

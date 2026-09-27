@@ -1,0 +1,33 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><meta name="theme-color" content="#111827"><title>Caucasus Traveler — Test v3</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="style.css"></head><body>
+<header><div><h1>🌍 Caucasus Traveler</h1><p>Prayer • Food • Places</p></div><button id="locateBtn">📍 Locate me</button></header>
+<section class="panel"><div class="notice" id="locationStatus">GPS is not active yet. Press “Locate me” to use distance and nearby highlighting.</div>
+<div class="layerbar"><strong>Show layers:</strong><label><input type="checkbox" data-layer="mosque" checked> 🕌 Prayer</label><label><input type="checkbox" data-layer="food" checked> 🍴 Food</label><label><input type="checkbox" data-layer="place" checked> ⭐ Places</label></div><div class="filter-panel-toggle"><button id="filterCollapseBtn" type="button" class="filter-collapse-main" aria-expanded="true" title="Hide filters">⌃ Hide / show filters</button></div><div id="filterContent">
+<div class="filter-group" id="mosqueFilters"><div class="group-title">🕌 Prayer filters</div><div class="filters"><label><input type="checkbox" data-filter="toilet"> 🚻 Toilet</label><label><input type="checkbox" data-filter="wudu"> 💧 Wudu</label><label><input type="checkbox" data-filter="wheelchair"> ♿ Wheelchair</label><label><input type="checkbox" data-filter="women"> 👩 Women's area</label><label><input type="checkbox" data-filter="open"> 🟢 Open</label></div></div>
+<div class="filter-group" id="foodFilters"><div class="group-title">🍴 Food filters</div><div class="filters"><label><input type="checkbox" data-filter="halal"> ☪ Halal</label><label><input type="checkbox" data-filter="porkFree"> 🚫 Pork-free</label><label><input type="checkbox" data-filter="vegetarian"> 🥗 Vegetarian</label><label><input type="checkbox" data-filter="cheap"> 💰 Cheap</label><label><input type="checkbox" data-filter="atmosphere"> 🙂 Nice atmosphere</label><label><input type="checkbox" data-filter="delicious"> ⭐ Very delicious</label></div></div>
+<div class="filter-group" id="placeFilters"><div class="group-title">⭐ Interesting-place filters</div><div class="filters"><label><input type="checkbox" data-filter="entertainment"> 🎡 Entertainment</label><label><input type="checkbox" data-filter="nature"> 🌿 Good nature</label><label><input type="checkbox" data-filter="interesting"> 💡 Interesting</label><label><input type="checkbox" data-filter="religion"> 🕊 Religion</label><label><input type="checkbox" data-filter="historical"> 🏛 Historical</label></div><div class="subnote">Short statuses: children / adult / any age • nice / good / very good • Christian / Islamic / Hindu / etc.</div></div>
+<div class="filter-group" id="distanceFilterGroup"><div class="group-title">📏 Distance from me</div><div class="filters" id="distanceFilters"><label><input type="radio" name="distance" value="all" checked> All</label><label><input type="radio" name="distance" value="1"> 1 km</label><label><input type="radio" name="distance" value="5"> 5 km</label><label><input type="radio" name="distance" value="10"> 10 km</label><label><input type="radio" name="distance" value="25"> 25 km</label><label><input type="radio" name="distance" value="50"> 50 km</label></div><div class="subnote">When GPS is available, active-layer places within 50 km blink to attract attention.</div></div></div>
+</section><div id="map"></div>
+<div id="createTool" class="create-tool" aria-label="Create new place">
+  <button id="pencilBtn" class="pencil-btn" title="Create new place" aria-label="Create new place">✎</button>
+  <div>Create new place</div>
+</div>
+<div id="createModal" class="modal" hidden>
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+  <section class="create-card" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+    <button id="closeCreate" class="close-btn" type="button" aria-label="Close">×</button>
+    <h2 id="createTitle">Create new place</h2>
+    <p id="createHint" class="subnote">Click any point on the map first. The coordinates will then be captured automatically and the information form will open.</p>
+    <div id="createStatus" class="notice">✎ Press the pencil, then click anywhere on the map to choose the new location.</div>
+    <div id="createFormArea" hidden>
+      <form id="createForm">
+        <div class="field"><label>Layer *</label><select id="newType" name="type" required><option value="">Choose layer…</option><option value="mosque">🕌 Prayer / praying room</option><option value="food">🍴 Food</option><option value="place">⭐ Interesting place</option></select></div>
+        <div id="dynamicFields"></div>
+        <div class="field"><label>Your email *</label><input id="submitterEmail" name="email" type="email" required placeholder="your@email.com" autocomplete="email"><small>Used only as the sender/reply address in the submission.</small></div>
+        <input type="text" id="honeypot" name="_honey" class="honeypot" tabindex="-1" autocomplete="off">
+        <button id="saveNew" class="save-btn" type="submit">💾 Save and send</button>
+      </form>
+    </div>
+  </section>
+</div>
+<footer>Community submissions are sent for checking before they are added to the public database.</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="app.js"></script></body></html>
